@@ -1,23 +1,24 @@
 import React from 'react';
+import styles from './page.module.css';
 
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-800 mb-12">Gerenciador de Currículos</h1>
+    <main className={styles.main}>
+      <div className={styles.titleContainer}>
+        <h1 className={styles.title}>Gerenciador de Currículos</h1>
       </div>
 
-      <div className="w-full max-w-lg grid grid-cols-2 gap-8">
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-10 px-8 rounded-lg shadow-lg transition duration-300">
+      <div className={styles.grid}>
+        <button className={`${styles.button} ${styles.addButton}`}>
           Adicionar Currículo
         </button>
-        <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-10 px-8 rounded-lg shadow-lg transition duration-300">
+        <button className={`${styles.button} ${styles.updateButton}`}>
           Atualizar Currículo
         </button>
-        <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-10 px-8 rounded-lg shadow-lg transition duration-300">
+        <button className={`${styles.button} ${styles.searchButton}`}>
           Buscar Currículo
         </button>
-        <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-10 px-8 rounded-lg shadow-lg transition duration-300">
+        <button className={`${styles.button} ${styles.deleteButton}`}>
           Excluir Currículo
         </button>
       </div>
