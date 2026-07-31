@@ -11,6 +11,10 @@ export default function HomePage() {
     router.push('/search');
   };
 
+   const handleUpdateClick = () => {
+    router.push('/update?id=2');
+  };
+
   return (
     <main className={styles.main}>
       <div className={styles.titleContainer}>
@@ -21,7 +25,8 @@ export default function HomePage() {
         <button className={`${styles.button} ${styles.addButton}`}>
           Adicionar Currículo
         </button>
-        <button className={`${styles.button} ${styles.updateButton}`}>
+        <button className={`${styles.button} ${styles.updateButton}`}
+          onClick={handleUpdateClick}>
           Atualizar Currículo
         </button>
         <button
