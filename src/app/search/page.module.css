@@ -18,18 +18,6 @@
   composes: button from global;
 }
 
-.addButton {
-  composes: addButton from global;
-}
-.updateButton {
-  composes: updateButton from global;
-}
-.searchButton {
-  composes: searchButton from global;
-}
-.deleteButton {
-  composes: deleteButton from global;
-}
 .backButton {
   padding: 0.5rem 1rem;
   border: 1px solid #d1d5db; /* Cinza claro para a borda */
