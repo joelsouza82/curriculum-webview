@@ -39,7 +39,7 @@ export async function getPersonal(id: string): Promise<Personal> {
  */
 export async function updatePersonal(id: string, data: Partial<Personal>): Promise<Personal> {
   try {
-    const response = await fetch(`/api/personals/${id}`, { // Usando o endpoint do proxy
+    const response = await fetch(`/api/personal/${id}`, { // Usando o endpoint do proxy
       method: 'PUT', // Ou 'PATCH', dependendo da sua API
       headers: {
         'Content-Type': 'application/json',
