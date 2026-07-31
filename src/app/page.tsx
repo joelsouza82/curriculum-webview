@@ -12,7 +12,7 @@ export default function HomePage() {
   };
 
    const handleUpdateClick = () => {
-    router.push('/update?id=2');
+    router.push('/update?id=5');
   };
 
   return (
