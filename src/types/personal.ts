@@ -1,4 +1,4 @@
-type Personal = {
+export type Personal = {
   id_personal: string;
   address: string;
   neighborhood: string;

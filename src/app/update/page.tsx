@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useEffect, useState, FormEvent } from 'react';
+import React, { useEffect, useState, FormEvent, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getPersonal, updatePersonal } from '../../services/personalService';
 import styles from './page.module.css';
+import { Personal } from '../../types/personal';
 
-export default function UpdatePage() {
+function UpdateForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const personalId = searchParams.get('id');
@@ -112,5 +113,13 @@ export default function UpdatePage() {
         </form>
       )}
     </main>
+  );
+}
+
+export default function UpdatePage() {
+  return (
+    <Suspense fallback={<p>Carregando...</p>}>
+      <UpdateForm />
+    </Suspense>
   );
 }

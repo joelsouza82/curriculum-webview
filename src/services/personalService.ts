@@ -1,3 +1,8 @@
+import { Personal } from '../types/personal';
+
+/**
+ * Busca todos os registros pessoais.
+ */
 export async function getPersonals() {
   try {
     const response = await fetch('/api/personals', { // Usando o endpoint do proxy

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { getPersonals } from '../../services/personalService';
 import styles from './page.module.css'; // Estilos específicos da página de busca
 import { useRouter } from 'next/navigation';
+import { Personal } from '../../types/personal';
 
 export default function SearchPage() {
   const [personals, setPersonals] = useState<Personal[]>([]);
