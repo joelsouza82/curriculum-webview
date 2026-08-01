@@ -1,43 +1,65 @@
 'use client';
 
-import React from 'react';
-import styles from './page.module.css';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function HomePage() {
+export default function LoginPage() {
   const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleSearchClick = () => {
-    router.push('/search');
-  };
-
-   const handleUpdateClick = () => {
-    router.push('/update?id=5');
+  const handleLogin = () => {
+    if (email && password) {
+      router.push('/home');
+    }
   };
 
   return (
-    <main className={styles.main}>
-      <div className={styles.titleContainer}>
-        <h1 className={styles.title}>Gerenciador de Currículos</h1>
-      </div>
+    <main className="flex min-h-screen items-center justify-center bg-slate-100 p-6">
+      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold text-slate-800">Login</h1>
+          <p className="mt-2 text-sm text-slate-500">Acesse o sistema de currículos</p>
+        </div>
 
-      <div className={styles.grid}>
-        <button className={`${styles.button} ${styles.addButton}`}>
-          Adicionar Currículo
-        </button>
-        <button className={`${styles.button} ${styles.updateButton}`}
-          onClick={handleUpdateClick}>
-          Atualizar Currículo
-        </button>
-        <button
-          className={`${styles.button} ${styles.searchButton}`}
-          onClick={handleSearchClick}
-        >
-          Buscar Currículo
-        </button>
-        <button className={`${styles.button} ${styles.deleteButton}`}>
-          Excluir Currículo
-        </button>
+        <div className="space-y-5">
+          <div>
+            <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
+              E-mail
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="seu@email.com"
+              className="w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-700">
+              Senha
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleLogin}
+            className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+            disabled={!email || !password}
+          >
+            Acessar
+          </button>
+        </div>
       </div>
     </main>
   );

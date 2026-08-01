@@ -1,0 +1,32 @@
+.main {
+  composes: main from global;
+}
+
+.titleContainer {
+  composes: titleContainer from global;
+}
+
+.title {
+  composes: title from global;
+}
+
+.grid {
+  composes: grid from global;
+}
+
+.button {
+  composes: button from global;
+}
+
+.addButton {
+  composes: addButton from global;
+}
+.updateButton {
+  composes: updateButton from global;
+}
+.searchButton {
+  composes: searchButton from global;
+}
+.deleteButton {
+  composes: deleteButton from global;
+}
