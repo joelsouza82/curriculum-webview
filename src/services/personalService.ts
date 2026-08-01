@@ -5,17 +5,18 @@ import { Personal } from '../types/personal';
  */
 export async function getPersonals() {
   try {
-    const response = await fetch('/api/personals', { // Usando o endpoint do proxy
+    const response = await fetch('/api/personals', {
       cache: 'no-store',
     });
     if (!response.ok) {
-      const errorBody = await response.text(); // Tenta ler o corpo da resposta para mais detalhes
+      const errorBody = await response.text();
       throw new Error(`HTTP error! status: ${response.status}, body: ${errorBody}`);
     }
+
     const data = await response.json();
-    return data;
+    return Array.isArray(data) ? data : [];
   } catch (error) {
-    console.error("Error fetching personals:", error);
+    console.error('Error fetching personals:', error);
     throw error;
   }
 }

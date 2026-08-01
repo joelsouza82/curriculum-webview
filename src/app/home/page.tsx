@@ -4,6 +4,13 @@ import React from 'react';
 import styles from './page.module.css';
 import { useRouter } from 'next/navigation';
 
+const icons = {
+  add: '＋',
+  update: '✎',
+  search: '⌕',
+  delete: '⌫',
+};
+
 export default function HomePage() {
   const router = useRouter();
 
@@ -23,22 +30,26 @@ export default function HomePage() {
 
       <div className={styles.grid}>
         <button className={`${styles.button} ${styles.addButton}`}>
-          Adicionar Currículo
+          <span className={styles.icon} aria-hidden="true">{icons.add}</span>
+          <span>Adicionar</span>
         </button>
         <button
           className={`${styles.button} ${styles.updateButton}`}
           onClick={handleUpdateClick}
         >
-          Atualizar Currículo
+          <span className={styles.icon} aria-hidden="true">{icons.update}</span>
+          <span>Atualizar</span>
         </button>
         <button
           className={`${styles.button} ${styles.searchButton}`}
           onClick={handleSearchClick}
         >
-          Buscar Currículo
+          <span className={styles.icon} aria-hidden="true">{icons.search}</span>
+          <span>Buscar</span>
         </button>
         <button className={`${styles.button} ${styles.deleteButton}`}>
-          Excluir Currículo
+          <span className={styles.icon} aria-hidden="true">{icons.delete}</span>
+          <span>Excluir</span>
         </button>
       </div>
     </main>
