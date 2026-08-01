@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import styles from './page.module.css';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,16 +16,16 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-100 p-6">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-slate-800">Login</h1>
-          <p className="mt-2 text-sm text-slate-500">Acesse o sistema de currículos</p>
+    <main className={styles.page}>
+      <div className={styles.card}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Login</h1>
+          <p className={styles.subtitle}>Acesse o sistema de currículos</p>
         </div>
 
-        <div className="space-y-5">
-          <div>
-            <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
+        <div className={styles.form}>
+          <div className={styles.fieldGroup}>
+            <label htmlFor="email" className={styles.label}>
               E-mail
             </label>
             <input
@@ -33,12 +34,12 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
-              className="w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              className={styles.input}
             />
           </div>
 
-          <div>
-            <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-700">
+          <div className={styles.fieldGroup}>
+            <label htmlFor="password" className={styles.label}>
               Senha
             </label>
             <input
@@ -47,14 +48,14 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-3 text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              className={styles.input}
             />
           </div>
 
           <button
             type="button"
             onClick={handleLogin}
-            className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+            className={styles.button}
             disabled={!email || !password}
           >
             Acessar
