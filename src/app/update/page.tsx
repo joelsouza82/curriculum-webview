@@ -5,11 +5,15 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { getPersonal, updatePersonal } from '../../services/personalService';
 import styles from './page.module.css';
 import { Personal } from '../../types/personal';
+import { useRequireAuth } from '../../hooks/useRequireAuth';
+import { clearSession } from '../../services/authService';
+import Header from '../../components/Header';
 
 function UpdateForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const personalId = searchParams.get('id');
+  const session = useRequireAuth();
 
   const [personal, setPersonal] = useState<Personal | null>(null);
   const [loading, setLoading] = useState(true);
@@ -17,6 +21,10 @@ function UpdateForm() {
   const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!session) {
+      return;
+    }
+
     if (!personalId) {
       setError("ID do registro não fornecido na URL.");
       setLoading(false);
@@ -38,7 +46,7 @@ function UpdateForm() {
     };
 
     fetchPersonalData();
-  }, [personalId]);
+  }, [personalId, session]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (personal) {
@@ -75,44 +83,50 @@ function UpdateForm() {
     router.back();
   };
 
+  const handleLogout = () => {
+    clearSession();
+    router.replace('/');
+  };
+
+  if (!session) {
+    return null;
+  }
+
   return (
-    <main className={styles.main}>
-      <div className="w-full mb-4">
-        <button className={`${styles.backButton} flex items-center`} onClick={handleBack}>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-          </svg>
-          Voltar
-        </button>
-      </div>
-      <h1 className={styles.title}>Atualizar Dados Pessoais</h1>
+    <>
+      <Header
+        title="Atualizar Dados Pessoais"
+        onBack={handleBack}
+        onLogout={handleLogout}
+      />
+      <main className={styles.main}>
+        {loading && <p>Carregando dados do currículo...</p>}
+        {error && <p className={styles.error}>{error}</p>}
+        {success && <p className={styles.success}>{success}</p>}
 
-      {loading && <p>Carregando dados do currículo...</p>}
-      {error && <p className={styles.error}>{error}</p>}
-      {success && <p className={styles.success}>{success}</p>}
-
-      {!loading && personal && (
-        <form onSubmit={handleSubmit} className={styles.form}>
-          {Object.keys(personal).filter(key => key !== 'id_personal').map((key) => (
-            <div className={styles.formGroup} key={key}>
-              <label htmlFor={key} className={styles.label}>{key.charAt(0).toUpperCase() + key.slice(1)}</label>
-              <input
-                type="text"
-                id={key}
-                name={key}
-                value={(personal as any)[key] || ''}
-                onChange={handleInputChange}
-                className={styles.input}
-                disabled={loading}
-              />
-            </div>
-          ))}
-          <button type="submit" className={styles.button} disabled={loading}>
-            {loading ? 'Atualizando...' : 'Salvar Alterações'}
-          </button>
-        </form>
-      )}
-    </main>
+        {!loading && personal && (
+          <form onSubmit={handleSubmit} className={styles.form}>
+            {Object.keys(personal).filter(key => key !== 'id_personal').map((key) => (
+              <div className={styles.formGroup} key={key}>
+                <label htmlFor={key} className={styles.label}>{key.charAt(0).toUpperCase() + key.slice(1)}</label>
+                <input
+                  type="text"
+                  id={key}
+                  name={key}
+                  value={(personal as any)[key] || ''}
+                  onChange={handleInputChange}
+                  className={styles.input}
+                  disabled={loading}
+                />
+              </div>
+            ))}
+            <button type="submit" className={styles.button} disabled={loading}>
+              {loading ? 'Atualizando...' : 'Salvar Alterações'}
+            </button>
+          </form>
+        )}
+      </main>
+    </>
   );
 }
 
