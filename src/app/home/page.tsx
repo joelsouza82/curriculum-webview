@@ -35,6 +35,10 @@ export default function HomePage() {
     router.push('/update?id=5');
   };
 
+  const handleAddClick = () => {
+    router.push('/create');
+  };
+
   return (
     <>
       <Header title="Gerenciador de Currículos" onLogout={handleLogout} />
@@ -44,7 +48,10 @@ export default function HomePage() {
         </div>
 
         <div className={styles.grid}>
-          <button className={`${styles.button} ${styles.addButton}`}>
+          <button
+            className={`${styles.button} ${styles.addButton}`}
+            onClick={handleAddClick}
+          >
             <span className={styles.icon} aria-hidden="true">{icons.add}</span>
             <span>Adicionar</span>
           </button>
@@ -59,7 +66,7 @@ export default function HomePage() {
             className={`${styles.button} ${styles.searchButton}`}
             onClick={handleSearchClick}
           >
-            <span className={styles.icon} aria-hidden="true">{icons.search}</span>
+            <span className={`${styles.icon} ${styles.searchIcon}`} aria-hidden="true">{icons.search}</span>
             <span>Buscar</span>
           </button>
           <button className={`${styles.button} ${styles.deleteButton}`}>

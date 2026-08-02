@@ -41,6 +41,29 @@ export async function getPersonal(id: string): Promise<Personal> {
 }
 
 /**
+ * Cria um novo registro pessoal.
+ */
+export async function createPersonal(data: Omit<Personal, 'id_personal' | 'login_id'>): Promise<Personal> {
+  try {
+    const response = await fetch('/api/personal', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errorBody}`);
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error creating personal:', error);
+    throw error;
+  }
+}
+
+/**
  * Atualiza os dados de um registro pessoal.
  */
 export async function updatePersonal(id: string, data: Partial<Personal>): Promise<Personal> {
