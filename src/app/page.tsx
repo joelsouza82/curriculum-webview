@@ -3,15 +3,25 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
+import { login } from '../services/loginService';
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    if (email && password) {
+  const handleLogin = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      await login({ email, password });
       router.push('/home');
+    } catch (err: any) {
+      setError(err.message || 'E-mail ou senha inválidos.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -24,6 +34,7 @@ export default function LoginPage() {
         </div>
 
         <div className={styles.form}>
+          {error && <p className={styles.error}>{error}</p>}
           <div className={styles.fieldGroup}>
             <label htmlFor="email" className={styles.label}>
               E-mail
@@ -56,9 +67,9 @@ export default function LoginPage() {
             type="button"
             onClick={handleLogin}
             className={styles.button}
-            disabled={!email || !password}
+            disabled={!email || !password || loading}
           >
-            Acessar
+            {loading ? 'Acessando...' : 'Acessar'}
           </button>
         </div>
       </div>
