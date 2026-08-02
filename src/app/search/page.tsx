@@ -5,6 +5,7 @@ import { getPersonals } from '../../services/personalService';
 import styles from './page.module.css'; // Estilos específicos da página de busca
 import { useRouter } from 'next/navigation';
 import { Personal } from '../../types/personal';
+import { useRequireAuth } from '../../hooks/useRequireAuth';
 
 export default function SearchPage() {
   const [personals, setPersonals] = useState<Personal[]>([]);
@@ -12,10 +13,15 @@ export default function SearchPage() {
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
+  const session = useRequireAuth();
   const handleBackToHome = () => router.push('/home');
   const safePersonals = Array.isArray(personals) ? personals : [];
 
   useEffect(() => {
+    if (!session) {
+      return;
+    }
+
     const fetchPersonals = async () => {
       try {
         setLoading(true);
@@ -31,7 +37,11 @@ export default function SearchPage() {
     };
 
     fetchPersonals();
-  }, []);
+  }, [session]);
+
+  if (!session) {
+    return null;
+  }
 
   return (
     <main className={styles.main}>

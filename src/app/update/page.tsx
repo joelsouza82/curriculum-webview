@@ -5,11 +5,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { getPersonal, updatePersonal } from '../../services/personalService';
 import styles from './page.module.css';
 import { Personal } from '../../types/personal';
+import { useRequireAuth } from '../../hooks/useRequireAuth';
 
 function UpdateForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const personalId = searchParams.get('id');
+  const session = useRequireAuth();
 
   const [personal, setPersonal] = useState<Personal | null>(null);
   const [loading, setLoading] = useState(true);
@@ -17,6 +19,10 @@ function UpdateForm() {
   const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!session) {
+      return;
+    }
+
     if (!personalId) {
       setError("ID do registro não fornecido na URL.");
       setLoading(false);
@@ -38,7 +44,7 @@ function UpdateForm() {
     };
 
     fetchPersonalData();
-  }, [personalId]);
+  }, [personalId, session]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (personal) {
@@ -74,6 +80,10 @@ function UpdateForm() {
   const handleBack = () => {
     router.back();
   };
+
+  if (!session) {
+    return null;
+  }
 
   return (
     <main className={styles.main}>

@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styles from './page.module.css';
 import { useRouter } from 'next/navigation';
-import { clearSession, getSession } from '../../services/authService';
-import { AuthSession } from '../../types/auth';
+import { clearSession } from '../../services/authService';
+import { useRequireAuth } from '../../hooks/useRequireAuth';
 
 const icons = {
   add: '＋',
@@ -15,16 +15,7 @@ const icons = {
 
 export default function HomePage() {
   const router = useRouter();
-  const [session, setSession] = useState<AuthSession | null>(null);
-
-  useEffect(() => {
-    const currentSession = getSession();
-    if (!currentSession) {
-      router.replace('/');
-      return;
-    }
-    setSession(currentSession);
-  }, [router]);
+  const session = useRequireAuth();
 
   const handleLogout = () => {
     clearSession();
