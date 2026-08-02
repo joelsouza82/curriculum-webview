@@ -12,7 +12,8 @@ export default function SearchPage() {
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
-  const handleBackToHome = () => router.push('/');
+  const handleBackToHome = () => router.push('/home');
+  const safePersonals = Array.isArray(personals) ? personals : [];
 
   useEffect(() => {
     const fetchPersonals = async () => {
@@ -20,17 +21,17 @@ export default function SearchPage() {
         setLoading(true);
         setError(null);
         const data = await getPersonals();
-        setPersonals(data);
+        setPersonals(Array.isArray(data) ? data : []);
       } catch (err: any) {
-        console.error("Error fetching personals:", err);
-        setError("Falha ao carregar dados pessoais. Verifique sua conexão ou tente novamente mais tarde.");
+        console.error('Error fetching personals:', err);
+        setError('Falha ao carregar dados pessoais. Verifique sua conexão ou tente novamente mais tarde.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchPersonals();
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
   return (
     <main className={styles.main}>
@@ -53,13 +54,13 @@ export default function SearchPage() {
       {loading && <p className="text-gray-600 text-lg">Carregando currículos...</p>}
       {error && <p className="text-red-500 text-lg">{error}</p>}
 
-      {!loading && !error && personals.length === 0 && (
+      {!loading && !error && safePersonals.length === 0 && (
         <p className="text-gray-600 text-lg">Nenhum currículo encontrado.</p>
       )}
 
-      {!loading && !error && personals.length > 0 && (
+      {!loading && !error && safePersonals.length > 0 && (
         <div className={styles.grid}>
-          {personals.map((personal) => (
+          {safePersonals.map((personal) => (
             <div key={personal.id_personal} className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold text-gray-800">{personal.address}</h2>
               <p className="text-gray-600">{personal.neighborhood}</p>
@@ -69,8 +70,8 @@ export default function SearchPage() {
               <p className="text-gray-600">{personal.phone}</p>
               <p className="text-gray-600">{personal.email}</p>
               <p className="text-gray-600">{personal.website}</p>
-              <p className='text-gray-600'>{personal.linkedin}</p> 
-              <p className='text-gray-600'>{personal.github}</p>           
+              <p className='text-gray-600'>{personal.linkedin}</p>
+              <p className='text-gray-600'>{personal.github}</p>
             </div>
           ))}
         </div>

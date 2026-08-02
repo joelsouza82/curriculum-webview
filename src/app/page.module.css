@@ -1,32 +1,98 @@
-.main {
-  composes: main from global;
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #f1f5f9;
 }
 
-.titleContainer {
-  composes: titleContainer from global;
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+}
+
+.header {
+  margin-bottom: 32px;
+  text-align: center;
 }
 
 .title {
-  composes: title from global;
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
 }
 
-.grid {
-  composes: grid from global;
+.subtitle {
+  margin: 8px 0 0;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: #94a3b8;
+}
+
+.input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
 }
 
 .button {
-  composes: button from global;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #ffffff;
+  padding: 14px 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, opacity 0.2s ease;
 }
 
-.addButton {
-  composes: addButton from global;
+.button:hover:not(:disabled) {
+  background: #1d4ed8;
 }
-.updateButton {
-  composes: updateButton from global;
-}
-.searchButton {
-  composes: searchButton from global;
-}
-.deleteButton {
-  composes: deleteButton from global;
+
+.button:disabled {
+  cursor: not-allowed;
+  background: #93c5fd;
 }
