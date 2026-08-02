@@ -12,14 +12,17 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLogin = async (event?: React.FormEvent) => {
+    event?.preventDefault();
     setError('');
     setLoading(true);
     try {
       await login({ email, password });
       router.push('/home');
-    } catch (err: any) {
-      setError(err.message || 'E-mail ou senha inválidos.');
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'E-mail ou senha inválidos.';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -33,7 +36,7 @@ export default function LoginPage() {
           <p className={styles.subtitle}>Acesse o sistema de currículos</p>
         </div>
 
-        <div className={styles.form}>
+        <form className={styles.form} onSubmit={handleLogin}>
           {error && <p className={styles.error}>{error}</p>}
           <div className={styles.fieldGroup}>
             <label htmlFor="email" className={styles.label}>
@@ -64,14 +67,13 @@ export default function LoginPage() {
           </div>
 
           <button
-            type="button"
-            onClick={handleLogin}
+            type="submit"
             className={styles.button}
             disabled={!email || !password || loading}
           >
             {loading ? 'Acessando...' : 'Acessar'}
           </button>
-        </div>
+        </form>
       </div>
     </main>
   );
