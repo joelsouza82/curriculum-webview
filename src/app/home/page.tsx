@@ -1,8 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './page.module.css';
 import { useRouter } from 'next/navigation';
+import { clearSession, getSession } from '../../services/authService';
+import { AuthSession } from '../../types/auth';
 
 const icons = {
   add: '＋',
@@ -13,6 +15,25 @@ const icons = {
 
 export default function HomePage() {
   const router = useRouter();
+  const [session, setSession] = useState<AuthSession | null>(null);
+
+  useEffect(() => {
+    const currentSession = getSession();
+    if (!currentSession) {
+      router.replace('/');
+      return;
+    }
+    setSession(currentSession);
+  }, [router]);
+
+  const handleLogout = () => {
+    clearSession();
+    router.replace('/');
+  };
+
+  if (!session) {
+    return null;
+  }
 
   const handleSearchClick = () => {
     router.push('/search');
@@ -26,6 +47,10 @@ export default function HomePage() {
     <main className={styles.main}>
       <div className={styles.titleContainer}>
         <h1 className={styles.title}>Gerenciador de Currículos</h1>
+        <p className={styles.welcome}>Olá, {session.email}</p>
+        <button type="button" className={styles.logoutButton} onClick={handleLogout}>
+          Sair
+        </button>
       </div>
 
       <div className={styles.grid}>

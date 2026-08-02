@@ -10,6 +10,27 @@
   composes: title from global;
 }
 
+.welcome {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+.logoutButton {
+  margin-top: 0.75rem;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.logoutButton:hover {
+  background: #f8fafc;
+}
+
 .grid {
   composes: grid from global;
   display: grid;

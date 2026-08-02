@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 import { login } from '../services/loginService';
+import { saveSession } from '../services/authService';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,7 +18,8 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      await login({ email, password });
+      const user = await login({ email, password });
+      saveSession(user);
       router.push('/home');
     } catch (err: unknown) {
       const message =
