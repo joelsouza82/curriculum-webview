@@ -32,3 +32,22 @@ export async function login(
 
   return match;
 }
+
+export async function createLogin(
+  credentials: Pick<Login, 'email' | 'password'>
+): Promise<Login> {
+  const response = await fetch('/api/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(credentials),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Falha ao criar cadastro');
+  }
+
+  return response.json();
+}

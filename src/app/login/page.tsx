@@ -3,27 +3,28 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
-import { login } from '../services/loginService';
-import { saveSession } from '../services/authService';
+import { createLogin } from '../../services/loginService';
 
-export default function LoginPage() {
+export default function CadastroPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (event?: React.FormEvent) => {
+  const handleSubmit = async (event?: React.FormEvent) => {
     event?.preventDefault();
     setError('');
+    setSuccess('');
     setLoading(true);
     try {
-      const user = await login({ email, password });
-      saveSession(user);
-      router.push('/home');
+      await createLogin({ email, password });
+      setSuccess('Cadastro realizado com sucesso!');
+      setTimeout(() => router.push('/'), 2000);
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : 'E-mail ou senha inválidos.';
+        err instanceof Error ? err.message : 'Não foi possível concluir o cadastro.';
       setError(message);
     } finally {
       setLoading(false);
@@ -34,12 +35,13 @@ export default function LoginPage() {
     <main className={styles.page}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <h1 className={styles.title}>Login</h1>
-          <p className={styles.subtitle}>Acesse o sistema de currículos</p>
+          <h1 className={styles.title}>Criar conta</h1>
+          <p className={styles.subtitle}>Cadastre-se para acessar o sistema de currículos</p>
         </div>
 
-        <form className={styles.form} onSubmit={handleLogin}>
+        <form className={styles.form} onSubmit={handleSubmit}>
           {error && <p className={styles.error}>{error}</p>}
+          {success && <p className={styles.success}>{success}</p>}
           <div className={styles.fieldGroup}>
             <label htmlFor="email" className={styles.label}>
               E-mail
@@ -73,18 +75,17 @@ export default function LoginPage() {
             className={styles.button}
             disabled={!email || !password || loading}
           >
-            {loading ? 'Acessando...' : 'Acessar'}
+            {loading ? 'Cadastrando...' : 'Cadastrar'}
           </button>
         </form>
 
         <p className={styles.footerText}>
-          Não tem conta?{' '}
           <button
             type="button"
             className={styles.link}
-            onClick={() => router.push('/login')}
+            onClick={() => router.push('/')}
           >
-            crie aqui
+            Já tenho conta, voltar ao login
           </button>
         </p>
       </div>
