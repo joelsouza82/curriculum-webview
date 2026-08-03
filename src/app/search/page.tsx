@@ -3,10 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import { getPersonals } from '../../services/personalService';
 import styles from './page.module.css'; // Estilos específicos da página de busca
-import { useRouter } from 'next/navigation';
 import { Personal } from '../../types/personal';
 import { useRequireAuth } from '../../hooks/useRequireAuth';
-import { clearSession } from '../../services/authService';
+import { useAppNavigation } from '../../hooks/useAppNavigation';
 import Header from '../../components/Header';
 
 export default function SearchPage() {
@@ -14,13 +13,8 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const router = useRouter();
   const session = useRequireAuth();
-  const handleBackToHome = () => router.push('/home');
-  const handleLogout = () => {
-    clearSession();
-    router.replace('/');
-  };
+  const { goToHome, logout } = useAppNavigation();
   const safePersonals = Array.isArray(personals) ? personals : [];
 
   useEffect(() => {
@@ -53,8 +47,8 @@ export default function SearchPage() {
     <>
       <Header
         title="Currículos Encontrados"
-        onBack={handleBackToHome}
-        onLogout={handleLogout}
+        onBack={goToHome}
+        onLogout={logout}
       />
       <main className={styles.main}>
         {loading && <p className="text-gray-600 text-lg">Carregando currículos...</p>}

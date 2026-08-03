@@ -1,19 +1,19 @@
 'use client';
 
 import React, { useEffect, useState, FormEvent, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { getPersonal, updatePersonal } from '../../services/personalService';
 import styles from './page.module.css';
 import { Personal } from '../../types/personal';
 import { useRequireAuth } from '../../hooks/useRequireAuth';
-import { clearSession } from '../../services/authService';
+import { useAppNavigation } from '../../hooks/useAppNavigation';
 import Header from '../../components/Header';
 
 function UpdateForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const personalId = searchParams.get('id');
   const session = useRequireAuth();
+  const { goToSearch, goBack, logout } = useAppNavigation();
 
   const [personal, setPersonal] = useState<Personal | null>(null);
   const [loading, setLoading] = useState(true);
@@ -70,22 +70,13 @@ function UpdateForm() {
       // Assumindo que existe uma função updatePersonal(id, data) no seu serviço
       await updatePersonal(personalId, personal);
       setSuccess("Dados atualizados com sucesso!");
-      setTimeout(() => router.push('/search'), 2000); // Redireciona para a busca após 2s
+      setTimeout(goToSearch, 2000); // Redireciona para a busca após 2s
     } catch (err) {
       console.error("Falha ao atualizar dados:", err);
       setError("Não foi possível atualizar os dados. Tente novamente.");
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleBack = () => {
-    router.back();
-  };
-
-  const handleLogout = () => {
-    clearSession();
-    router.replace('/');
   };
 
   if (!session) {
@@ -96,8 +87,8 @@ function UpdateForm() {
     <>
       <Header
         title="Atualizar Dados Pessoais"
-        onBack={handleBack}
-        onLogout={handleLogout}
+        onBack={goBack}
+        onLogout={logout}
       />
       <main className={styles.main}>
         {loading && <p>Carregando dados do currículo...</p>}

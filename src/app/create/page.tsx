@@ -1,17 +1,16 @@
 'use client';
 
 import React, { useState, FormEvent, Suspense } from 'react';
-import { useRouter } from 'next/navigation';
 import { createPersonal } from '../../services/personalService';
 import styles from './page.module.css';
 import { Personal } from '../../types/personal';
 import { useRequireAuth } from '../../hooks/useRequireAuth';
-import { clearSession } from '../../services/authService';
+import { useAppNavigation } from '../../hooks/useAppNavigation';
 import Header from '../../components/Header';
 
 function CreateForm() {
-  const router = useRouter();
   const session = useRequireAuth();
+  const { goToHome, goBack, logout } = useAppNavigation();
 
   const [formData, setFormData] = useState<Omit<Personal, 'id_personal' | 'login_id'>>({
     name: '',
@@ -47,22 +46,13 @@ function CreateForm() {
     try {
       await createPersonal(formData);
       setSuccess('Registro criado com sucesso!');
-      setTimeout(() => router.push('/home'), 2000);
+      setTimeout(goToHome, 2000);
     } catch (err) {
       console.error('Falha ao criar registro:', err);
       setError('Não foi possível criar o registro. Tente novamente.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleBack = () => {
-    router.back();
-  };
-
-  const handleLogout = () => {
-    clearSession();
-    router.replace('/');
   };
 
   if (!session) {
@@ -75,8 +65,8 @@ function CreateForm() {
     <>
       <Header
         title="Criar Novo Currículo"
-        onBack={handleBack}
-        onLogout={handleLogout}
+        onBack={goBack}
+        onLogout={logout}
       />
       <main className={styles.main}>
         {error && <p className={styles.error}>{error}</p>}
