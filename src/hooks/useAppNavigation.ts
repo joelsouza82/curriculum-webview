@@ -8,6 +8,7 @@ export function useAppNavigation() {
 
   return {
     goToHome: () => router.push('/home'),
+    goToPersonal: () => router.push('/personal'),
     goToSearch: () => router.push('/search'),
     goToUpdate: (id: string) => router.push(`/update?id=${id}`),
     goToCreate: () => router.push('/create'),

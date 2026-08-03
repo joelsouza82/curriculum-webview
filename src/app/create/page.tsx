@@ -10,7 +10,7 @@ import Header from '../../components/Header';
 
 function CreateForm() {
   const session = useRequireAuth();
-  const { goToHome, goBack, logout } = useAppNavigation();
+  const { goToPersonal, goBack, logout } = useAppNavigation();
 
   const [formData, setFormData] = useState<Omit<Personal, 'id_personal' | 'login_id'>>({
     name: '',
@@ -46,7 +46,7 @@ function CreateForm() {
     try {
       await createPersonal(formData);
       setSuccess('Registro criado com sucesso!');
-      setTimeout(goToHome, 2000);
+      setTimeout(goToPersonal, 2000);
     } catch (err) {
       console.error('Falha ao criar registro:', err);
       setError('Não foi possível criar o registro. Tente novamente.');

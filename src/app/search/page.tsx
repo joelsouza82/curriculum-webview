@@ -14,7 +14,7 @@ export default function SearchPage() {
   const [error, setError] = useState<string | null>(null);
 
   const session = useRequireAuth();
-  const { goToHome, logout } = useAppNavigation();
+  const { goToPersonal, logout } = useAppNavigation();
   const safePersonals = Array.isArray(personals) ? personals : [];
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function SearchPage() {
     <>
       <Header
         title="Currículos Encontrados"
-        onBack={goToHome}
+        onBack={goToPersonal}
         onLogout={logout}
       />
       <main className={styles.main}>
