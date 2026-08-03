@@ -60,6 +60,10 @@
   display: block;
 }
 
+.searchIcon {
+  font-size: clamp(2.4rem, 5.6vw, 3.5rem);
+}
+
 .addButton {
   composes: addButton from global;
 }

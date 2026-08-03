@@ -6,12 +6,6 @@
   padding: 2rem;
 }
 
-.title {
-  composes: title from global;
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
 .form {
   width: 100%;
   max-width: 600px;
@@ -41,7 +35,7 @@
   border-radius: 0.375rem;
   font-size: 1rem;
   width: 100%;
-  color: #000000; /* Cor do texto preta */
+  color: #000000;
 }
 
 .input:focus {
@@ -74,22 +68,6 @@
 .buttonIcon {
   width: 1.25rem;
   height: 1.25rem;
-}
-
-.backButton {
-  padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db; /* Cinza claro para a borda */
-  border-radius: 0.375rem; /* Bordas arredondadas */
-  background-color: #ffffff; /* Fundo branco */
-  color: #374151; /* Cor do texto cinza escuro */
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-}
-
-.backButton:hover {
-  background-color: #f9fafb; /* Fundo levemente acinzentado no hover */
-  border-color: #9ca3af; /* Borda mais escura no hover */
 }
 
 .error {

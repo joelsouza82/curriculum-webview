@@ -2,9 +2,8 @@
 
 import React from 'react';
 import styles from './page.module.css';
-import { useRouter } from 'next/navigation';
-import { clearSession } from '../../services/authService';
 import { useRequireAuth } from '../../hooks/useRequireAuth';
+import { useAppNavigation } from '../../hooks/useAppNavigation';
 import Header from '../../components/Header';
 
 const icons = {
@@ -15,51 +14,41 @@ const icons = {
 };
 
 export default function HomePage() {
-  const router = useRouter();
   const session = useRequireAuth();
-
-  const handleLogout = () => {
-    clearSession();
-    router.replace('/');
-  };
+  const { goToSearch, goToUpdate, goToCreate, logout } = useAppNavigation();
 
   if (!session) {
     return null;
   }
 
-  const handleSearchClick = () => {
-    router.push('/search');
-  };
-
-  const handleUpdateClick = () => {
-    router.push('/update?id=5');
-  };
-
   return (
     <>
-      <Header title="Gerenciador de Currículos" onLogout={handleLogout} />
+      <Header title="Gerenciador de Currículos" onLogout={logout} />
       <main className={styles.main}>
         <div className={styles.titleContainer}>
           <p className={styles.welcome}>Olá, {session.email}</p>
         </div>
 
         <div className={styles.grid}>
-          <button className={`${styles.button} ${styles.addButton}`}>
+          <button
+            className={`${styles.button} ${styles.addButton}`}
+            onClick={goToCreate}
+          >
             <span className={styles.icon} aria-hidden="true">{icons.add}</span>
             <span>Adicionar</span>
           </button>
           <button
             className={`${styles.button} ${styles.updateButton}`}
-            onClick={handleUpdateClick}
+            onClick={() => goToUpdate('5')}
           >
             <span className={styles.icon} aria-hidden="true">{icons.update}</span>
             <span>Atualizar</span>
           </button>
           <button
             className={`${styles.button} ${styles.searchButton}`}
-            onClick={handleSearchClick}
+            onClick={goToSearch}
           >
-            <span className={styles.icon} aria-hidden="true">{icons.search}</span>
+            <span className={`${styles.icon} ${styles.searchIcon}`} aria-hidden="true">{icons.search}</span>
             <span>Buscar</span>
           </button>
           <button className={`${styles.button} ${styles.deleteButton}`}>
