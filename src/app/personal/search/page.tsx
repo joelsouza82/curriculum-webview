@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { getPersonals } from '../../services/personalService';
+import { getPersonals } from '../../../services/personalService';
 import styles from './page.module.css'; // Estilos específicos da página de busca
-import { Personal } from '../../types/personal';
-import { useRequireAuth } from '../../hooks/useRequireAuth';
-import { useAppNavigation } from '../../hooks/useAppNavigation';
-import Header from '../../components/Header';
+import { Personal } from '../../../types/personal';
+import { useRequireAuth } from '../../../hooks/useRequireAuth';
+import { useAppNavigation } from '../../../hooks/useAppNavigation';
+import Header from '../../../components/Header';
 
 export default function SearchPage() {
   const [personals, setPersonals] = useState<Personal[]>([]);
@@ -14,7 +14,7 @@ export default function SearchPage() {
   const [error, setError] = useState<string | null>(null);
 
   const session = useRequireAuth();
-  const { goToHome, logout } = useAppNavigation();
+  const { goToPersonal, logout } = useAppNavigation();
   const safePersonals = Array.isArray(personals) ? personals : [];
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function SearchPage() {
     <>
       <Header
         title="Currículos Encontrados"
-        onBack={goToHome}
+        onBack={goToPersonal}
         onLogout={logout}
       />
       <main className={styles.main}>

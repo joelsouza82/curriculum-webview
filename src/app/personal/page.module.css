@@ -16,6 +16,21 @@
   color: #64748b;
 }
 
+.logoutButton {
+  margin-top: 0.75rem;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.logoutButton:hover {
+  background: #f8fafc;
+}
+
 .grid {
   composes: grid from global;
   display: grid;
@@ -45,17 +60,21 @@
   display: block;
 }
 
-.personalButton {
-  composes: personalButton from global;
+.searchIcon {
+  font-size: clamp(2.4rem, 5.6vw, 3.5rem);
 }
-.experienceButton {
-  composes: experienceButton from global;
+
+.addButton {
+  composes: addButton from global;
 }
-.coursesButton {
-  composes: coursesButton from global;
+.updateButton {
+  composes: updateButton from global;
 }
-.diplomasButton {
-  composes: diplomasButton from global;
+.searchButton {
+  composes: searchButton from global;
+}
+.deleteButton {
+  composes: deleteButton from global;
 }
 
 @media (max-width: 480px) {
@@ -73,3 +92,4 @@
     width: 100%;
   }
 }
+
