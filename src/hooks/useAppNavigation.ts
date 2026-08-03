@@ -9,9 +9,9 @@ export function useAppNavigation() {
   return {
     goToHome: () => router.push('/home'),
     goToPersonal: () => router.push('/personal'),
-    goToSearch: () => router.push('/search'),
-    goToUpdate: (id: string) => router.push(`/update?id=${id}`),
-    goToCreate: () => router.push('/create'),
+    goToSearch: () => router.push('/personal/search'),
+    goToUpdate: (id: string) => router.push(`/personal/update?id=${id}`),
+    goToCreate: () => router.push('/personal/create'),
     goBack: () => router.back(),
     logout: () => {
       clearSession();

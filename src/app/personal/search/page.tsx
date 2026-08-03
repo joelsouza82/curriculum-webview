@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { getPersonals } from '../../services/personalService';
+import { getPersonals } from '../../../services/personalService';
 import styles from './page.module.css'; // Estilos específicos da página de busca
-import { Personal } from '../../types/personal';
-import { useRequireAuth } from '../../hooks/useRequireAuth';
-import { useAppNavigation } from '../../hooks/useAppNavigation';
-import Header from '../../components/Header';
+import { Personal } from '../../../types/personal';
+import { useRequireAuth } from '../../../hooks/useRequireAuth';
+import { useAppNavigation } from '../../../hooks/useAppNavigation';
+import Header from '../../../components/Header';
 
 export default function SearchPage() {
   const [personals, setPersonals] = useState<Personal[]>([]);

@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, FormEvent, Suspense } from 'react';
-import { createPersonal } from '../../services/personalService';
+import { createPersonal } from '../../../services/personalService';
 import styles from './page.module.css';
-import { Personal } from '../../types/personal';
-import { useRequireAuth } from '../../hooks/useRequireAuth';
-import { useAppNavigation } from '../../hooks/useAppNavigation';
-import Header from '../../components/Header';
+import { Personal } from '../../../types/personal';
+import { useRequireAuth } from '../../../hooks/useRequireAuth';
+import { useAppNavigation } from '../../../hooks/useAppNavigation';
+import Header from '../../../components/Header';
 
 function CreateForm() {
   const session = useRequireAuth();
