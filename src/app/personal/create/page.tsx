@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, FormEvent, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { createPersonal } from '../../../services/personalService';
 import styles from './page.module.css';
 import { Personal } from '../../../types/personal';
@@ -10,6 +11,7 @@ import Header from '../../../components/Header';
 
 function CreateForm() {
   const session = useRequireAuth();
+  const searchParams = useSearchParams();
   const { goToPersonal, goBack, logout } = useAppNavigation();
 
   const [formData, setFormData] = useState<Omit<Personal, 'id_personal' | 'login_id'>>({
@@ -39,14 +41,19 @@ function CreateForm() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!session) {
+      return;
+    }
     setLoading(true);
     setError(null);
     setSuccess(null);
 
+    const loginId = searchParams.get('loginId') || String(session.id);
+
     try {
-      await createPersonal(formData);
+      await createPersonal({ ...formData, login_id: loginId });
       setSuccess('Registro criado com sucesso!');
-      setTimeout(goToPersonal, 2000);
+      setTimeout(() => goToPersonal(loginId), 2000);
     } catch (err) {
       console.error('Falha ao criar registro:', err);
       setError('Não foi possível criar o registro. Tente novamente.');

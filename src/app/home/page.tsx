@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import styles from './page.module.css';
 import { useRequireAuth } from '../../hooks/useRequireAuth';
 import { useAppNavigation } from '../../hooks/useAppNavigation';
@@ -13,13 +14,16 @@ const icons = {
   diplomas: '🎓',
 };
 
-export default function HomePage() {
+function HomeContent() {
   const session = useRequireAuth();
+  const searchParams = useSearchParams();
   const { goToPersonal, logout } = useAppNavigation();
 
   if (!session) {
     return null;
   }
+
+  const loginId = searchParams.get('loginId') || String(session.id);
 
   return (
     <>
@@ -32,7 +36,7 @@ export default function HomePage() {
         <div className={styles.grid}>
           <button
             className={`${styles.button} ${styles.personalButton}`}
-            onClick={goToPersonal}
+            onClick={() => goToPersonal(loginId)}
           >
             <span className={styles.icon} aria-hidden="true">{icons.personal}</span>
             <span>Dados Pessoais</span>
@@ -52,5 +56,13 @@ export default function HomePage() {
         </div>
       </main>
     </>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<p>Carregando...</p>}>
+      <HomeContent />
+    </Suspense>
   );
 }

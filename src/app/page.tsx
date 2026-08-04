@@ -56,7 +56,7 @@ export default function LoginPage() {
     try {
       const user = await login({ email, password });
       saveSession(user);
-      router.push('/home');
+      router.push(`/home?loginId=${user.id}`);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : 'E-mail ou senha inválidos.';

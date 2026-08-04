@@ -22,28 +22,9 @@ export async function getPersonals() {
 }
 
 /**
- * Busca os dados de um único registro pessoal.
- */
-export async function getPersonal(id: string): Promise<Personal> {
-  try {
-    const response = await fetch(`/api/personal/${id}`, {
-      cache: 'no-store',
-    });
-    if (!response.ok) {
-      const errorBody = await response.text();
-      throw new Error(`HTTP error! status: ${response.status}, body: ${errorBody}`);
-    }
-    return response.json();
-  } catch (error) {
-    console.error(`Error fetching personal with ID ${id}:`, error);
-    throw error;
-  }
-}
-
-/**
  * Cria um novo registro pessoal.
  */
-export async function createPersonal(data: Omit<Personal, 'id_personal' | 'login_id'>): Promise<Personal> {
+export async function createPersonal(data: Omit<Personal, 'id_personal'>): Promise<Personal> {
   try {
     const response = await fetch('/api/personal', {
       method: 'POST',
