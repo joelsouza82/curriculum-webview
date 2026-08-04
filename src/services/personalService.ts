@@ -1,6 +1,17 @@
 import { Personal } from '../types/personal';
 
 /**
+ * Converte uma data "YYYY-MM-DD" (formato do <input type="date">) para
+ * RFC3339, formato exigido pela API. Deixa outros formatos inalterados.
+ */
+function toRFC3339(date?: string): string | undefined {
+  if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return `${date}T00:00:00Z`;
+  }
+  return date;
+}
+
+/**
  * Busca todos os registros pessoais.
  */
 export async function getPersonals() {
@@ -31,7 +42,11 @@ export async function createPersonal(data: Omit<Personal, 'id_personal'>): Promi
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        birthdate: toRFC3339(data.birthdate),
+        login_id: Number(data.login_id),
+      }),
     });
     if (!response.ok) {
       const errorBody = await response.text();
@@ -54,7 +69,11 @@ export async function updatePersonal(id: string, data: Partial<Personal>): Promi
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        birthdate: toRFC3339(data.birthdate),
+        login_id: data.login_id !== undefined ? Number(data.login_id) : data.login_id,
+      }),
     });
     if (!response.ok) {
       const errorBody = await response.text();
