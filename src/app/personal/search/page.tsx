@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { getPersonals } from '../../../services/personalService';
 import styles from './page.module.css';
 import { Personal } from '../../../types/personal';
@@ -65,14 +66,18 @@ function formatBirthdate(value: string) {
   return date.toLocaleDateString('pt-BR');
 }
 
-export default function SearchPage() {
+function SearchContent() {
   const [personals, setPersonals] = useState<Personal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const session = useRequireAuth();
+  const searchParams = useSearchParams();
   const { goToPersonal, logout } = useAppNavigation();
-  const safePersonals = Array.isArray(personals) ? personals : [];
+  const loginId = searchParams.get('loginId') || (session ? String(session.id) : '');
+  const safePersonals = Array.isArray(personals)
+    ? personals.filter((item) => String(item.login_id) === loginId)
+    : [];
 
   useEffect(() => {
     if (!session) {
@@ -104,7 +109,7 @@ export default function SearchPage() {
     <>
       <Header
         title="Currículos Encontrados"
-        onBack={goToPersonal}
+        onBack={() => goToPersonal(loginId)}
         onLogout={logout}
       />
       <main className={styles.main}>
@@ -177,5 +182,13 @@ export default function SearchPage() {
         )}
       </main>
     </>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<p>Carregando...</p>}>
+      <SearchContent />
+    </Suspense>
   );
 }

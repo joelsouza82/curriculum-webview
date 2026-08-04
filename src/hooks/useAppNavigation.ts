@@ -7,11 +7,11 @@ export function useAppNavigation() {
   const router = useRouter();
 
   return {
-    goToHome: () => router.push('/home'),
-    goToPersonal: () => router.push('/personal'),
-    goToSearch: () => router.push('/personal/search'),
-    goToUpdate: (id: string) => router.push(`/personal/update?id=${id}`),
-    goToCreate: () => router.push('/personal/create'),
+    goToHome: (loginId: string) => router.push(`/home?loginId=${loginId}`),
+    goToPersonal: (loginId: string) => router.push(`/personal?loginId=${loginId}`),
+    goToSearch: (loginId: string) => router.push(`/personal/search?loginId=${loginId}`),
+    goToUpdate: (loginId: string) => router.push(`/personal/update?loginId=${loginId}`),
+    goToCreate: (loginId: string) => router.push(`/personal/create?loginId=${loginId}`),
     goBack: () => router.back(),
     logout: () => {
       clearSession();

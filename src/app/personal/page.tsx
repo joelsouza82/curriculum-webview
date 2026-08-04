@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import styles from './page.module.css';
 import { useRequireAuth } from '../../hooks/useRequireAuth';
 import { useAppNavigation } from '../../hooks/useAppNavigation';
@@ -38,17 +39,20 @@ function DeleteIcon() {
   );
 }
 
-export default function PersonalPage() {
+function PersonalContent() {
   const session = useRequireAuth();
+  const searchParams = useSearchParams();
   const { goToSearch, goToUpdate, goToCreate, goToHome, logout } = useAppNavigation();
 
   if (!session) {
     return null;
   }
 
+  const loginId = searchParams.get('loginId') || String(session.id);
+
   return (
     <>
-      <Header title="Dados Pessoais" onBack={goToHome} onLogout={logout} />
+      <Header title="Dados Pessoais" onBack={() => goToHome(loginId)} onLogout={logout} />
       <main className={styles.main}>
         <div className={styles.titleContainer}>
           <p className={styles.welcome}>Olá, {session.email}</p>
@@ -57,21 +61,21 @@ export default function PersonalPage() {
         <div className={styles.grid}>
           <button
             className={`${styles.button} ${styles.addButton}`}
-            onClick={goToCreate}
+            onClick={() => goToCreate(loginId)}
           >
             <span className={styles.icon} aria-hidden="true"><AddIcon /></span>
             <span>Adicionar</span>
           </button>
           <button
             className={`${styles.button} ${styles.updateButton}`}
-            onClick={() => goToUpdate('5')}
+            onClick={() => goToUpdate(loginId)}
           >
             <span className={styles.icon} aria-hidden="true"><UpdateIcon /></span>
             <span>Atualizar</span>
           </button>
           <button
             className={`${styles.button} ${styles.searchButton}`}
-            onClick={goToSearch}
+            onClick={() => goToSearch(loginId)}
           >
             <span className={styles.icon} aria-hidden="true"><SearchIcon /></span>
             <span>Buscar</span>
@@ -83,5 +87,13 @@ export default function PersonalPage() {
         </div>
       </main>
     </>
+  );
+}
+
+export default function PersonalPage() {
+  return (
+    <Suspense fallback={<p>Carregando...</p>}>
+      <PersonalContent />
+    </Suspense>
   );
 }
