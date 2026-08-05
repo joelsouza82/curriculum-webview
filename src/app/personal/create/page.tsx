@@ -71,7 +71,7 @@ function CreateForm() {
   return (
     <>
       <Header
-        title="Criar Novo Currículo"
+        title="Cadastrar Dados Pessoais"
         onBack={goBack}
         onLogout={logout}
       />

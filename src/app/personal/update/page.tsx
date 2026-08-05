@@ -122,7 +122,7 @@ function UpdateForm() {
         onLogout={logout}
       />
       <main className={styles.main}>
-        {loading && <p>Carregando dados do currículo...</p>}
+        {loading && <p>Carregando dados pessoais...</p>}
         {error && <p className={styles.error}>{error}</p>}
         {success && <p className={styles.success}>{success}</p>}
 

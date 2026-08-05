@@ -108,7 +108,7 @@ function SearchContent() {
   return (
     <>
       <Header
-        title="Currículos Encontrados"
+        title="Dados Pessoais Encontrado"
         onBack={() => goToPersonal(loginId)}
         onLogout={logout}
       />
@@ -116,7 +116,7 @@ function SearchContent() {
         {loading && (
           <div className={styles.stateWrap}>
             <span className={styles.spinner} aria-hidden="true" />
-            <p className={styles.stateText}>Carregando currículos...</p>
+            <p className={styles.stateText}>Carregando dados pessoais...</p>
           </div>
         )}
 
