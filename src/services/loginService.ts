@@ -1,5 +1,22 @@
 import { Login } from '../types/login';
 
+export async function getLogins(): Promise<Login[]> {
+  const response = await fetch('/api/logins', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Falha ao buscar cadastros');
+  }
+
+  const logins = await response.json();
+  return Array.isArray(logins) ? logins : [];
+}
+
 export async function login(
   credentials: Pick<Login, 'email' | 'password'>
 ): Promise<Login> {
