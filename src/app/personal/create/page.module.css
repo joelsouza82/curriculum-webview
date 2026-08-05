@@ -95,3 +95,32 @@
   max-width: 600px;
   text-align: center;
 }
+
+.warning {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  color: #92400e;
+  background-color: #fef3c7;
+  border: 1px solid #fde68a;
+  padding: 1.25rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.warningLink {
+  composes: button from global;
+  background-color: #d97706;
+  border-radius: 9999px;
+  border: 2px solid #d97706;
+  padding: 0.6rem 1.25rem;
+}
+
+.warningLink:hover {
+  background-color: #b45309;
+  border-color: #b45309;
+}
