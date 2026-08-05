@@ -8,6 +8,7 @@ import { Personal } from '../../../types/personal';
 import { useRequireAuth } from '../../../hooks/useRequireAuth';
 import { useAppNavigation } from '../../../hooks/useAppNavigation';
 import Header from '../../../components/Header';
+import { PERSONAL_FIELD_LABELS } from '../../../shared/constants';
 
 function CreateForm() {
   const session = useRequireAuth();
@@ -130,7 +131,7 @@ function CreateForm() {
             {fields.map((field) => (
               <div className={styles.formGroup} key={field}>
                 <label htmlFor={field} className={styles.label}>
-                  {field.charAt(0).toUpperCase() + field.slice(1)}
+                  {PERSONAL_FIELD_LABELS[field]}
                 </label>
                 <input
                   type={field === 'birthdate' ? 'date' : 'text'}

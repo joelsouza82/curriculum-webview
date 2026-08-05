@@ -8,6 +8,7 @@ import { Personal } from '../../../types/personal';
 import { useRequireAuth } from '../../../hooks/useRequireAuth';
 import { useAppNavigation } from '../../../hooks/useAppNavigation';
 import Header from '../../../components/Header';
+import { PERSONAL_FIELD_LABELS } from '../../../shared/constants';
 
 function Icon({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
@@ -137,7 +138,9 @@ function UpdateForm() {
           <form onSubmit={handleSubmit} className={styles.form}>
             {Object.keys(personal).filter(key => key !== 'id_personal' && key !== 'login_id').map((key) => (
               <div className={styles.formGroup} key={key}>
-                <label htmlFor={key} className={styles.label}>{key.charAt(0).toUpperCase() + key.slice(1)}</label>
+                <label htmlFor={key} className={styles.label}>
+                  {PERSONAL_FIELD_LABELS[key as keyof typeof PERSONAL_FIELD_LABELS]}
+                </label>
                 <input
                   type="text"
                   id={key}
