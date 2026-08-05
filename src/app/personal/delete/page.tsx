@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useState, FormEvent, Suspense } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { getPersonals, updatePersonal } from '../../../services/personalService';
+import { getPersonals, deletePersonal } from '../../../services/personalService';
 import styles from './page.module.css';
 import { Personal } from '../../../types/personal';
 import { useRequireAuth } from '../../../hooks/useRequireAuth';
@@ -33,7 +33,22 @@ const inboxPath = (
   />
 );
 
-function UpdateForm() {
+const trashPath = (
+  <>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104a2.25 2.25 0 0 1 4.5 0V4.5h-4.5V3.104Z" />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M4.5 4.5h15M6 4.5v13.5A2.25 2.25 0 0 0 8.25 20.25h7.5A2.25 2.25 0 0 0 18 18V4.5M9.75 9.75v6m4.5-6v6"
+    />
+  </>
+);
+
+const xMarkPath = (
+  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+);
+
+function DeleteForm() {
   const searchParams = useSearchParams();
   const session = useRequireAuth();
   const { goToSearch, goToPersonal, logout } = useAppNavigation();
@@ -41,6 +56,7 @@ function UpdateForm() {
 
   const [personal, setPersonal] = useState<Personal | null>(null);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
@@ -51,7 +67,7 @@ function UpdateForm() {
     }
 
     if (!loginId) {
-      setError("Login não fornecido na URL.");
+      setError('Login não fornecido na URL.');
       setLoading(false);
       return;
     }
@@ -70,8 +86,8 @@ function UpdateForm() {
         setPersonal(match);
         setError(null);
       } catch (err) {
-        console.error("Falha ao buscar dados pessoais:", err);
-        setError("Não foi possível carregar os dados para atualização. Tente novamente.");
+        console.error('Falha ao buscar dados pessoais:', err);
+        setError('Não foi possível carregar os dados para exclusão. Tente novamente.');
       } finally {
         setLoading(false);
       }
@@ -80,33 +96,25 @@ function UpdateForm() {
     fetchPersonalData();
   }, [loginId, session]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (personal) {
-      const { name, value } = e.target;
-      setPersonal({ ...personal, [name]: value });
-    }
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!personal || !session) {
-      setError("Dados pessoais não carregados.");
+  const handleDelete = async () => {
+    if (!personal) {
       return;
     }
 
-    setLoading(true);
+    setDeleting(true);
     setError(null);
     setSuccess(null);
 
     try {
-      await updatePersonal(personal.id_personal, { ...personal, login_id: loginId });
-      setSuccess("Dados atualizados com sucesso!");
-      setTimeout(() => goToSearch(loginId), 2000); // Redireciona para a busca após 2s
+      await deletePersonal(personal.id_personal);
+      setSuccess('Registro excluído com sucesso!');
+      setPersonal(null);
+      setTimeout(() => goToPersonal(loginId), 2000);
     } catch (err) {
-      console.error("Falha ao atualizar dados:", err);
-      setError("Não foi possível atualizar os dados. Tente novamente.");
+      console.error('Falha ao excluir dados:', err);
+      setError('Não foi possível excluir os dados. Tente novamente.');
     } finally {
-      setLoading(false);
+      setDeleting(false);
     }
   };
 
@@ -117,7 +125,7 @@ function UpdateForm() {
   return (
     <>
       <Header
-        title="Atualizar Dados Pessoais"
+        title="Excluir Dados Pessoais"
         onBack={() => goToPersonal(loginId)}
         onLogout={logout}
       />
@@ -134,49 +142,57 @@ function UpdateForm() {
         )}
 
         {!loading && personal && (
-          <form onSubmit={handleSubmit} className={styles.form}>
-            {Object.keys(personal).filter(key => key !== 'id_personal' && key !== 'login_id').map((key) => (
-              <div className={styles.formGroup} key={key}>
-                <label htmlFor={key} className={styles.label}>{key.charAt(0).toUpperCase() + key.slice(1)}</label>
-                <input
-                  type="text"
-                  id={key}
-                  name={key}
-                  value={(personal as any)[key] || ''}
-                  onChange={handleInputChange}
-                  className={styles.input}
-                  disabled={loading}
-                />
+          <div className={styles.card}>
+            <p className={styles.warning}>
+              Tem certeza que deseja excluir permanentemente o registro abaixo? Esta ação não pode ser desfeita.
+            </p>
+
+            <div className={styles.infoList}>
+              <div className={styles.infoRow}>
+                <span className={styles.infoLabel}>Nome:</span>
+                <span>{personal.name || '—'}</span>
               </div>
-            ))}
-            <button type="submit" className={styles.button} disabled={loading}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className={styles.buttonIcon}
+              <div className={styles.infoRow}>
+                <span className={styles.infoLabel}>Documento:</span>
+                <span>{personal.document || '—'}</span>
+              </div>
+              <div className={styles.infoRow}>
+                <span className={styles.infoLabel}>Email:</span>
+                <span>{personal.email || '—'}</span>
+              </div>
+            </div>
+
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={styles.cancelButton}
+                onClick={() => goToSearch(loginId)}
+                disabled={deleting}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                />
-              </svg>
-              {loading ? 'Atualizando...' : 'Salvar Alterações'}
-            </button>
-          </form>
+                <Icon className={styles.buttonIcon}>{xMarkPath}</Icon>
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className={styles.button}
+                onClick={handleDelete}
+                disabled={deleting}
+              >
+                <Icon className={styles.buttonIcon}>{trashPath}</Icon>
+                {deleting ? 'Excluindo...' : 'Excluir'}
+              </button>
+            </div>
+          </div>
         )}
       </main>
     </>
   );
 }
 
-export default function UpdatePage() {
+export default function DeletePage() {
   return (
     <Suspense fallback={<p>Carregando...</p>}>
-      <UpdateForm />
+      <DeleteForm />
     </Suspense>
   );
 }

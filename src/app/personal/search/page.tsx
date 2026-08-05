@@ -130,7 +130,7 @@ function SearchContent() {
         {!loading && !error && safePersonals.length === 0 && (
           <div className={styles.stateWrap}>
             <Icon className={styles.stateIcon}>{paths.inbox}</Icon>
-            <p className={styles.stateText}>Nenhum currículo encontrado.</p>
+            <p className={styles.stateText}>Nenhum dado pessoal encontrado para este login.</p>
           </div>
         )}
 
