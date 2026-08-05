@@ -42,7 +42,7 @@ function DeleteIcon() {
 function PersonalContent() {
   const session = useRequireAuth();
   const searchParams = useSearchParams();
-  const { goToSearch, goToUpdate, goToCreate, goToHome, logout } = useAppNavigation();
+  const { goToSearch, goToUpdate, goToCreate, goToDelete, goToHome, logout } = useAppNavigation();
 
   if (!session) {
     return null;
@@ -80,7 +80,10 @@ function PersonalContent() {
             <span className={styles.icon} aria-hidden="true"><SearchIcon /></span>
             <span>Buscar</span>
           </button>
-          <button className={`${styles.button} ${styles.deleteButton}`}>
+          <button
+            className={`${styles.button} ${styles.deleteButton}`}
+            onClick={() => goToDelete(loginId)}
+          >
             <span className={styles.icon} aria-hidden="true"><DeleteIcon /></span>
             <span>Excluir</span>
           </button>

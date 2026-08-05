@@ -85,3 +85,21 @@ export async function updatePersonal(id: string, data: Partial<Personal>): Promi
     throw error;
   }
 }
+
+/**
+ * Remove um registro pessoal.
+ */
+export async function deletePersonal(id: string): Promise<void> {
+  try {
+    const response = await fetch(`/api/personal/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errorBody}`);
+    }
+  } catch (error) {
+    console.error(`Error deleting personal with ID ${id}:`, error);
+    throw error;
+  }
+}

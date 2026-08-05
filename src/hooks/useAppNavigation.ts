@@ -12,6 +12,7 @@ export function useAppNavigation() {
     goToSearch: (loginId: string) => router.push(`/personal/search?loginId=${loginId}`),
     goToUpdate: (loginId: string) => router.push(`/personal/update?loginId=${loginId}`),
     goToCreate: (loginId: string) => router.push(`/personal/create?loginId=${loginId}`),
+    goToDelete: (loginId: string) => router.push(`/personal/delete?loginId=${loginId}`),
     goBack: () => router.back(),
     logout: () => {
       clearSession();
