@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
-import { createLogin } from '../../services/loginService';
+import { createLogin, getLogins } from '../../services/loginService';
 
 function Icon({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
@@ -59,6 +59,15 @@ export default function CadastroPage() {
     setSuccess('');
     setLoading(true);
     try {
+      const logins = await getLogins();
+      const emailTaken = logins.some(
+        (item) => item.email.toLowerCase() === email.toLowerCase()
+      );
+      if (emailTaken) {
+        setError('Já existe um cadastro para este e-mail.');
+        return;
+      }
+
       await createLogin({ email, password });
       setSuccess('Cadastro realizado com sucesso!');
       setTimeout(() => router.push('/'), 2000);
