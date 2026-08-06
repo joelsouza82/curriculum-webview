@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portal de Currículos
 
-## Getting Started
+Aplicação web (Next.js) para gerenciamento de currículos: login/cadastro de usuários e CRUD dos dados pessoais do currículo (experiências, cursos e diplomas estão previstos na navegação, mas ainda não implementados).
 
-First, run the development server:
+## Stack
+
+- [Next.js 16](https://nextjs.org) (App Router)
+- [React 19](https://react.dev)
+- TypeScript
+- Tailwind CSS 4 (`@tailwindcss/postcss`) + CSS Modules por página/componente
+- Jest + Testing Library (`@testing-library/react`, `jest-environment-jsdom`) para testes
+- ESLint (`eslint-config-next`)
+
+## Como rodar
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra [http://localhost:3000](http://localhost:3000). A tela inicial (`/`) é a página de login.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Outros scripts disponíveis:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build       # build de produção
+npm run start        # sobe o build de produção
+npm run lint          # ESLint
+npm run test           # roda a suíte de testes (Jest)
+npm run test:watch      # Jest em modo watch
+```
 
-## Learn More
+## Backend / API
 
-To learn more about Next.js, take a look at the following resources:
+Este projeto é apenas o front-end. As chamadas para `/api/*` são reescritas (proxy) em [next.config.ts](next.config.ts) para uma API externa:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+/api/:path*  →  https://go-api-nzg1.onrender.com/:path*
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Estrutura de pastas
 
-## Deploy on Vercel
+```
+src/
+├── app/                    # Rotas (App Router)
+│   ├── page.tsx             # "/"        – Login
+│   ├── login/page.tsx        # "/login"   – Cadastro de novo usuário
+│   ├── home/page.tsx          # "/home"    – Dashboard pós-login
+│   ├── personal/page.tsx       # "/personal"        – Menu de Dados Pessoais
+│   ├── personal/create/         # "/personal/create" – Adicionar
+│   ├── personal/search/          # "/personal/search" – Buscar
+│   ├── personal/update/           # "/personal/update" – Atualizar
+│   ├── personal/delete/            # "/personal/delete" – Excluir
+│   └── layout.tsx                   # Layout raiz (metadata, fontes, html/body)
+├── components/               # Componentes de UI compartilhados (ex.: Header)
+├── hooks/                     # Hooks de navegação e autenticação
+├── services/                   # Chamadas fetch às rotas /api/*
+├── shared/                      # Constantes compartilhadas (labels de campos etc.)
+└── types/                        # Tipos TypeScript (Login, AuthSession, Personal)
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+> Cada rota possui, ao lado do `page.tsx`, um `page.module.css` (estilos) e um `page.test.tsx` (testes).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Rotas
+
+| Rota | Página | Descrição |
+| --- | --- | --- |
+| `/` | Login | Formulário de e-mail/senha; redireciona para `/home?loginId=<id>` |
+| `/login` | Cadastro | Criação de novo usuário (nome da rota é legado; o conteúdo é o formulário de cadastro) |
+| `/home` | Home | Dashboard com atalhos para Dados Pessoais, Experiências, Cursos e Diplomas |
+| `/personal` | Menu de Dados Pessoais | Atalhos para adicionar, atualizar, buscar e excluir |
+| `/personal/create` | Adicionar | Formulário de criação dos dados pessoais |
+| `/personal/search` | Buscar | Consulta dos dados pessoais |
+| `/personal/update` | Atualizar | Edição dos dados pessoais |
+| `/personal/delete` | Excluir | Remoção dos dados pessoais |
+
+Rotas protegidas (tudo exceto `/` e `/login`) usam o hook `useRequireAuth`, que redireciona para `/` quando não há sessão ativa.
+
+## Autenticação
+
+Não há autenticação real no back-end: o login (`src/services/loginService.ts`) busca todos os cadastros em `/api/logins` e valida e-mail/senha no cliente. Após o login, a sessão (`{ id, email }`) é salva em `sessionStorage` via `src/services/authService.ts` e lida pelo hook `useRequireAuth` para proteger as demais páginas. `useAppNavigation` centraliza as rotas de navegação entre as telas e o logout.
+
+## Testes
+
+```bash
+npm run test
+```
+
+Os testes usam Jest (via `next/jest`) com ambiente `jsdom` e Testing Library. Cada página/componente/hook/serviço tem seu arquivo `*.test.tsx`/`*.test.ts` correspondente.
+
+## Observação
+
+Existe um arquivo `page.tsx` solto na raiz do repositório (fora de `src/app`), não utilizado pelo App Router — remanescente de uma versão anterior da Home.
