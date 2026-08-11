@@ -59,6 +59,11 @@ function formatBirthdate(value: string) {
   if (!value) {
     return '';
   }
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) {
+    const [, year, month, day] = match;
+    return `${day}/${month}/${year}`;
+  }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
     return value;

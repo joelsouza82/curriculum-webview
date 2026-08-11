@@ -47,6 +47,7 @@
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-top: 1rem;
 }
@@ -139,4 +140,27 @@
 .stateText {
   margin: 0;
   font-size: 1rem;
+}
+
+@media (max-width: 480px) {
+  .main {
+    padding: 1rem;
+  }
+
+  .card {
+    padding: 1.25rem;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .button,
+  .cancelButton {
+    width: 100%;
+    justify-content: center;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    box-sizing: border-box;
+  }
 }
