@@ -1,4 +1,5 @@
 import { Personal } from '../types/personal';
+import { getAuthHeader } from './authService';
 
 /**
  * Converte uma data "YYYY-MM-DD" (formato do <input type="date">) para
@@ -18,6 +19,9 @@ export async function getPersonals() {
   try {
     const response = await fetch('/api/personals', {
       cache: 'no-store',
+      headers: {
+        ...getAuthHeader(),
+      },
     });
     if (!response.ok) {
       const errorBody = await response.text();
@@ -41,6 +45,7 @@ export async function createPersonal(data: Omit<Personal, 'id_personal'>): Promi
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...getAuthHeader(),
       },
       body: JSON.stringify({
         ...data,
@@ -68,6 +73,7 @@ export async function updatePersonal(id: string, data: Partial<Personal>): Promi
       method: 'PUT', // Ou 'PATCH', dependendo da sua API
       headers: {
         'Content-Type': 'application/json',
+        ...getAuthHeader(),
       },
       body: JSON.stringify({
         ...data,
@@ -93,6 +99,9 @@ export async function deletePersonal(id: string): Promise<void> {
   try {
     const response = await fetch(`/api/personal/${id}`, {
       method: 'DELETE',
+      headers: {
+        ...getAuthHeader(),
+      },
     });
     if (!response.ok) {
       const errorBody = await response.text();

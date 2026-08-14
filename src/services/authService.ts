@@ -1,13 +1,8 @@
 import { AuthSession } from '../types/auth';
-import { Login } from '../types/login';
 
 const SESSION_KEY = 'auth_session';
 
-export function saveSession(login: Login): void {
-  const session: AuthSession = {
-    id: login.id,
-    email: login.email,
-  };
+export function saveSession(session: AuthSession): void {
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
 }
 
@@ -29,10 +24,23 @@ export function getSession(): AuthSession | null {
   }
 }
 
+export function getToken(): string | null {
+  return getSession()?.token ?? null;
+}
+
 export function isAuthenticated(): boolean {
   return getSession() !== null;
 }
 
 export function clearSession(): void {
   sessionStorage.removeItem(SESSION_KEY);
+}
+
+/**
+ * Cabeçalho Authorization para chamadas autenticadas. Retorna objeto vazio
+ * quando não há sessão, para não quebrar chamadas feitas antes do login.
+ */
+export function getAuthHeader(): Record<string, string> {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
 }

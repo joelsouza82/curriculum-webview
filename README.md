@@ -78,7 +78,9 @@ Rotas protegidas (tudo exceto `/` e `/login`) usam o hook `useRequireAuth`, que 
 
 ## Autenticação
 
-Não há autenticação real no back-end: o login (`src/services/loginService.ts`) busca todos os cadastros em `/api/logins` e valida e-mail/senha no cliente. Após o login, a sessão (`{ id, email }`) é salva em `sessionStorage` via `src/services/authService.ts` e lida pelo hook `useRequireAuth` para proteger as demais páginas. `useAppNavigation` centraliza as rotas de navegação entre as telas e o logout.
+O login (`authLogin` em `src/services/loginService.ts`) chama `POST /api/auth/login` com e-mail/senha; a API valida as credenciais e retorna um token JWT. O `id` e o `email` do usuário são extraídos do payload do próprio token (claims `sub` e `email`), sem precisar de outra chamada. A sessão (`{ id, email, token }`) é salva em `sessionStorage` via `src/services/authService.ts` e lida pelo hook `useRequireAuth` para proteger as demais páginas.
+
+As demais chamadas autenticadas (`/api/logins`, `/api/personals`, `/api/personal/*`) enviam o header `Authorization: Bearer <token>`, montado por `getAuthHeader()` em `src/services/authService.ts` a partir do token da sessão atual. `useAppNavigation` centraliza as rotas de navegação entre as telas e o logout (que limpa a sessão, incluindo o token).
 
 ## Testes
 

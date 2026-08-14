@@ -1,5 +1,6 @@
-import { getLogins, login, createLogin } from './loginService';
+import { getLogins, authLogin, createLogin } from './loginService';
 import { Login } from '../types/login';
+import { saveSession, clearSession } from './authService';
 
 function mockFetchOnce(response: { ok?: boolean; status?: number; jsonBody?: unknown }) {
   const { jsonBody, ok = true, status = 200 } = response;
@@ -10,9 +11,20 @@ function mockFetchOnce(response: { ok?: boolean; status?: number; jsonBody?: unk
   });
 }
 
+/**
+ * Monta um JWT (sem assinatura válida) só para os testes de decodificação
+ * do payload feita por authLogin.
+ */
+function fakeJwt(payload: Record<string, unknown>): string {
+  const base64url = (obj: unknown) =>
+    Buffer.from(JSON.stringify(obj)).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return `${base64url({ alg: 'HS256', typ: 'JWT' })}.${base64url(payload)}.signature`;
+}
+
 describe('loginService', () => {
   beforeEach(() => {
     global.fetch = jest.fn();
+    sessionStorage.clear();
   });
 
   describe('getLogins', () => {
@@ -27,6 +39,19 @@ describe('loginService', () => {
         headers: { 'Content-Type': 'application/json' },
       });
       expect(result).toEqual(logins);
+    });
+
+    it('sends the Authorization header when a session exists', async () => {
+      saveSession({ id: 9, email: 'a@a.com', token: 'tok123' });
+      mockFetchOnce({ jsonBody: [] });
+
+      await getLogins();
+
+      expect(global.fetch).toHaveBeenCalledWith('/api/logins', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer tok123' },
+      });
+      clearSession();
     });
 
     it('returns an empty array when the response is not an array', async () => {
@@ -44,32 +69,35 @@ describe('loginService', () => {
     });
   });
 
-  describe('login', () => {
-    const logins: Login[] = [
-      { id: 1, email: 'a@a.com', password: '123' },
-      { id: 2, email: 'b@b.com', password: '456' },
-    ];
+  describe('authLogin', () => {
+    it('posts credentials to /api/auth/login and returns the decoded session', async () => {
+      const token = fakeJwt({ email: 'b@b.com', sub: 2, exp: 9999999999 });
+      mockFetchOnce({ jsonBody: { token } });
 
-    it('returns the matching login for correct credentials', async () => {
-      mockFetchOnce({ jsonBody: logins });
+      const result = await authLogin({ email: 'b@b.com', password: '456' });
 
-      const result = await login({ email: 'b@b.com', password: '456' });
-
-      expect(result).toEqual(logins[1]);
+      expect(global.fetch).toHaveBeenCalledWith('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'b@b.com', password: '456' }),
+      });
+      expect(result).toEqual({ id: 2, email: 'b@b.com', token });
     });
 
-    it('throws when no login matches the credentials', async () => {
-      mockFetchOnce({ jsonBody: logins });
+    it('throws with the API error message when credentials are invalid', async () => {
+      mockFetchOnce({ ok: false, status: 401, jsonBody: { error: 'credenciais inválidas' } });
 
-      await expect(login({ email: 'b@b.com', password: 'wrong' })).rejects.toThrow(
-        'E-mail ou senha inválidos.'
+      await expect(authLogin({ email: 'b@b.com', password: 'wrong' })).rejects.toThrow(
+        'credenciais inválidas'
       );
     });
 
-    it('throws when the response is not ok', async () => {
-      mockFetchOnce({ ok: false, status: 500, jsonBody: { message: 'down' } });
+    it('falls back to a default message when the API sends no error body', async () => {
+      mockFetchOnce({ ok: false, status: 500, jsonBody: {} });
 
-      await expect(login({ email: 'a@a.com', password: '123' })).rejects.toThrow('down');
+      await expect(authLogin({ email: 'a@a.com', password: '123' })).rejects.toThrow(
+        'E-mail ou senha inválidos.'
+      );
     });
   });
 

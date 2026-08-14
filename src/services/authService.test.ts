@@ -1,19 +1,26 @@
-import { saveSession, getSession, isAuthenticated, clearSession } from './authService';
-import { Login } from '../types/login';
+import {
+  saveSession,
+  getSession,
+  getToken,
+  getAuthHeader,
+  isAuthenticated,
+  clearSession,
+} from './authService';
+import { AuthSession } from '../types/auth';
 
 describe('authService', () => {
   beforeEach(() => {
     sessionStorage.clear();
   });
 
-  const login: Login = { id: 5, email: 'user@example.com', password: 'secret' };
+  const session: AuthSession = { id: 5, email: 'user@example.com', token: 'abc.def.ghi' };
 
-  it('saveSession stores only id and email under auth_session', () => {
-    saveSession(login);
+  it('saveSession stores the session under auth_session', () => {
+    saveSession(session);
 
     const raw = sessionStorage.getItem('auth_session');
     expect(raw).not.toBeNull();
-    expect(JSON.parse(raw as string)).toEqual({ id: 5, email: 'user@example.com' });
+    expect(JSON.parse(raw as string)).toEqual(session);
   });
 
   it('getSession returns null when nothing is stored', () => {
@@ -21,9 +28,9 @@ describe('authService', () => {
   });
 
   it('getSession returns the saved session', () => {
-    saveSession(login);
+    saveSession(session);
 
-    expect(getSession()).toEqual({ id: 5, email: 'user@example.com' });
+    expect(getSession()).toEqual(session);
   });
 
   it('getSession clears and returns null for corrupted data', () => {
@@ -33,16 +40,36 @@ describe('authService', () => {
     expect(sessionStorage.getItem('auth_session')).toBeNull();
   });
 
+  it('getToken returns null when there is no session', () => {
+    expect(getToken()).toBeNull();
+  });
+
+  it('getToken returns the stored token', () => {
+    saveSession(session);
+
+    expect(getToken()).toBe('abc.def.ghi');
+  });
+
+  it('getAuthHeader returns an empty object without a session', () => {
+    expect(getAuthHeader()).toEqual({});
+  });
+
+  it('getAuthHeader returns a Bearer header when a session exists', () => {
+    saveSession(session);
+
+    expect(getAuthHeader()).toEqual({ Authorization: 'Bearer abc.def.ghi' });
+  });
+
   it('isAuthenticated reflects whether a session exists', () => {
     expect(isAuthenticated()).toBe(false);
 
-    saveSession(login);
+    saveSession(session);
 
     expect(isAuthenticated()).toBe(true);
   });
 
   it('clearSession removes the stored session', () => {
-    saveSession(login);
+    saveSession(session);
 
     clearSession();
 

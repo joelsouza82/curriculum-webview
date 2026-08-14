@@ -1,5 +1,6 @@
 import { getPersonals, createPersonal, updatePersonal, deletePersonal } from './personalService';
 import { Personal } from '../types/personal';
+import { saveSession, clearSession } from './authService';
 
 function mockFetchOnce(response: Partial<Response> & { jsonBody?: unknown; textBody?: string }) {
   const { jsonBody, textBody, ok = true, status = 200 } = response;
@@ -15,6 +16,7 @@ describe('personalService', () => {
   beforeEach(() => {
     global.fetch = jest.fn();
     jest.spyOn(console, 'error').mockImplementation(() => {});
+    sessionStorage.clear();
   });
 
   afterEach(() => {
@@ -28,8 +30,24 @@ describe('personalService', () => {
 
       const result = await getPersonals();
 
-      expect(global.fetch).toHaveBeenCalledWith('/api/personals', { cache: 'no-store' });
+      expect(global.fetch).toHaveBeenCalledWith('/api/personals', {
+        cache: 'no-store',
+        headers: {},
+      });
       expect(result).toEqual(personals);
+    });
+
+    it('sends the Authorization header when a session exists', async () => {
+      saveSession({ id: 1, email: 'a@a.com', token: 'tok123' });
+      mockFetchOnce({ jsonBody: [] });
+
+      await getPersonals();
+
+      expect(global.fetch).toHaveBeenCalledWith('/api/personals', {
+        cache: 'no-store',
+        headers: { Authorization: 'Bearer tok123' },
+      });
+      clearSession();
     });
 
     it('returns an empty array when the API response is not an array', async () => {
@@ -160,7 +178,23 @@ describe('personalService', () => {
 
       await deletePersonal('9');
 
-      expect(global.fetch).toHaveBeenCalledWith('/api/personal/9', { method: 'DELETE' });
+      expect(global.fetch).toHaveBeenCalledWith('/api/personal/9', {
+        method: 'DELETE',
+        headers: {},
+      });
+    });
+
+    it('sends the Authorization header when a session exists', async () => {
+      saveSession({ id: 1, email: 'a@a.com', token: 'tok123' });
+      mockFetchOnce({ ok: true, jsonBody: {} });
+
+      await deletePersonal('9');
+
+      expect(global.fetch).toHaveBeenCalledWith('/api/personal/9', {
+        method: 'DELETE',
+        headers: { Authorization: 'Bearer tok123' },
+      });
+      clearSession();
     });
 
     it('throws when the response is not ok', async () => {
