@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
-import { login } from '../services/loginService';
+import { authLogin } from '../services/loginService';
 import { saveSession } from '../services/authService';
 
 function Icon({ children, className }: { children: React.ReactNode; className?: string }) {
@@ -54,9 +54,9 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      const user = await login({ email, password });
-      saveSession(user);
-      router.push(`/home?loginId=${user.id}`);
+      const session = await authLogin({ email, password });
+      saveSession(session);
+      router.push(`/home?loginId=${session.id}`);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : 'E-mail ou senha inválidos.';
