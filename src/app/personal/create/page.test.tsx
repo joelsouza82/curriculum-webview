@@ -72,8 +72,16 @@ describe('CreatePage', () => {
     render(<CreatePage />);
     await screen.findByLabelText('Nome completo');
 
+    const specialValues: Record<string, string> = {
+      birthdate: '2000-01-31',
+      email: 'email-value@example.com',
+      document: '11144477735',
+      rg: '123456789',
+      phone: '11987654321',
+    };
+
     for (const [field, label] of Object.entries(PERSONAL_FIELD_LABELS)) {
-      const value = field === 'birthdate' ? '2000-01-31' : `${field}-value`;
+      const value = specialValues[field] ?? `${field}-value`;
       await user.type(screen.getByLabelText(label), value);
     }
 
@@ -81,9 +89,42 @@ describe('CreatePage', () => {
 
     await waitFor(() =>
       expect(createPersonal).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'name-value', email: 'email-value', login_id: '11' })
+        expect.objectContaining({
+          name: 'name-value',
+          email: 'email-value@example.com',
+          login_id: '11',
+        })
       )
     );
     expect(await screen.findByText('Registro criado com sucesso!')).toBeInTheDocument();
+  });
+
+  it('blocks submission and shows a field error when the CPF is invalid', async () => {
+    (getPersonals as jest.Mock).mockResolvedValue([]);
+    const user = userEvent.setup();
+
+    render(<CreatePage />);
+    await screen.findByLabelText('Nome completo');
+
+    const specialValues: Record<string, string> = {
+      birthdate: '2000-01-31',
+      email: 'email-value@example.com',
+      document: '123',
+      rg: '123456789',
+      phone: '11987654321',
+    };
+
+    for (const [field, label] of Object.entries(PERSONAL_FIELD_LABELS)) {
+      const value = specialValues[field] ?? `${field}-value`;
+      await user.type(screen.getByLabelText(label), value);
+    }
+
+    await user.click(screen.getByRole('button', { name: /salvar/i }));
+
+    expect(await screen.findByText('CPF inválido.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Corrija os campos destacados antes de continuar.')
+    ).toBeInTheDocument();
+    expect(createPersonal).not.toHaveBeenCalled();
   });
 });

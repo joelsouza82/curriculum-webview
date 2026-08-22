@@ -9,6 +9,8 @@ import { useRequireAuth } from '../../../hooks/useRequireAuth';
 import { useAppNavigation } from '../../../hooks/useAppNavigation';
 import Header from '../../../components/Header';
 import { PERSONAL_FIELD_LABELS } from '../../../shared/constants';
+import { maskPersonalField, validatePersonalField } from '../../../shared/validation';
+import { getFieldInputProps } from '../../../shared/fieldInput';
 
 function Icon({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
@@ -170,6 +172,7 @@ function UpdateForm() {
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!session) {
@@ -209,7 +212,9 @@ function UpdateForm() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (personal) {
       const { name, value } = e.target;
-      setPersonal({ ...personal, [name]: value });
+      const maskedValue = maskPersonalField(name, value);
+      setPersonal({ ...personal, [name]: maskedValue });
+      setFieldErrors((prev) => ({ ...prev, [name]: validatePersonalField(name, maskedValue) }));
     }
   };
 
@@ -217,6 +222,18 @@ function UpdateForm() {
     e.preventDefault();
     if (!personal || !session) {
       setError("Dados pessoais não carregados.");
+      return;
+    }
+
+    const newFieldErrors: Record<string, string> = {};
+    Object.keys(personal)
+      .filter((key) => key !== 'id_personal' && key !== 'login_id')
+      .forEach((key) => {
+        newFieldErrors[key] = validatePersonalField(key, personal[key as keyof Personal] || '');
+      });
+    setFieldErrors(newFieldErrors);
+    if (Object.values(newFieldErrors).some(Boolean)) {
+      setError('Corrija os campos destacados antes de continuar.');
       return;
     }
 
@@ -267,9 +284,11 @@ function UpdateForm() {
                   {PERSONAL_FIELD_LABELS[key as keyof typeof PERSONAL_FIELD_LABELS]}
                 </label>
                 <div className={styles.inputWrapper}>
-                  <Icon className={styles.inputIcon}>{PERSONAL_FIELD_ICONS[key]}</Icon>
+                  {key !== 'birthdate' && (
+                    <Icon className={styles.inputIcon}>{PERSONAL_FIELD_ICONS[key]}</Icon>
+                  )}
                   <input
-                    type={key === 'birthdate' ? 'date' : 'text'}
+                    {...getFieldInputProps(key)}
                     id={key}
                     name={key}
                     value={
@@ -278,10 +297,17 @@ function UpdateForm() {
                         : (personal as any)[key] || ''
                     }
                     onChange={handleInputChange}
-                    className={styles.input}
+                    className={`${styles.input} ${key === 'birthdate' ? styles.inputNoIcon : ''} ${fieldErrors[key] ? styles.inputInvalid : ''}`}
                     disabled={loading}
+                    aria-invalid={!!fieldErrors[key]}
+                    aria-describedby={fieldErrors[key] ? `${key}-error` : undefined}
                   />
                 </div>
+                {fieldErrors[key] && (
+                  <span id={`${key}-error`} className={styles.fieldError}>
+                    {fieldErrors[key]}
+                  </span>
+                )}
               </div>
             ))}
             <button type="submit" className={styles.button} disabled={loading}>
