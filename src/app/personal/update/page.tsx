@@ -9,6 +9,7 @@ import { useRequireAuth } from '../../../hooks/useRequireAuth';
 import { useAppNavigation } from '../../../hooks/useAppNavigation';
 import Header from '../../../components/Header';
 import { PERSONAL_FIELD_LABELS } from '../../../shared/constants';
+import { maskPersonalField, validatePersonalField } from '../../../shared/validation';
 
 function Icon({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
@@ -159,6 +160,30 @@ function toDateInputValue(value: string) {
   return match ? match[0] : '';
 }
 
+type InputProps = {
+  type: string;
+  maxLength?: number;
+  inputMode?: 'numeric' | 'tel' | 'email' | 'text';
+  placeholder?: string;
+};
+
+function getFieldInputProps(field: string): InputProps {
+  switch (field) {
+    case 'birthdate':
+      return { type: 'date' };
+    case 'document':
+      return { type: 'text', maxLength: 14, inputMode: 'numeric', placeholder: '000.000.000-00' };
+    case 'rg':
+      return { type: 'text', maxLength: 12, placeholder: '00.000.000-0' };
+    case 'phone':
+      return { type: 'text', maxLength: 15, inputMode: 'tel', placeholder: '(00) 00000-0000' };
+    case 'email':
+      return { type: 'email', placeholder: 'seuemail@exemplo.com' };
+    default:
+      return { type: 'text' };
+  }
+}
+
 function UpdateForm() {
   const searchParams = useSearchParams();
   const session = useRequireAuth();
@@ -170,6 +195,7 @@ function UpdateForm() {
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!session) {
@@ -209,7 +235,9 @@ function UpdateForm() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (personal) {
       const { name, value } = e.target;
-      setPersonal({ ...personal, [name]: value });
+      const maskedValue = maskPersonalField(name, value);
+      setPersonal({ ...personal, [name]: maskedValue });
+      setFieldErrors((prev) => ({ ...prev, [name]: validatePersonalField(name, maskedValue) }));
     }
   };
 
@@ -217,6 +245,18 @@ function UpdateForm() {
     e.preventDefault();
     if (!personal || !session) {
       setError("Dados pessoais não carregados.");
+      return;
+    }
+
+    const newFieldErrors: Record<string, string> = {};
+    Object.keys(personal)
+      .filter((key) => key !== 'id_personal' && key !== 'login_id')
+      .forEach((key) => {
+        newFieldErrors[key] = validatePersonalField(key, personal[key as keyof Personal] || '');
+      });
+    setFieldErrors(newFieldErrors);
+    if (Object.values(newFieldErrors).some(Boolean)) {
+      setError('Corrija os campos destacados antes de continuar.');
       return;
     }
 
@@ -269,7 +309,7 @@ function UpdateForm() {
                 <div className={styles.inputWrapper}>
                   <Icon className={styles.inputIcon}>{PERSONAL_FIELD_ICONS[key]}</Icon>
                   <input
-                    type={key === 'birthdate' ? 'date' : 'text'}
+                    {...getFieldInputProps(key)}
                     id={key}
                     name={key}
                     value={
@@ -278,10 +318,17 @@ function UpdateForm() {
                         : (personal as any)[key] || ''
                     }
                     onChange={handleInputChange}
-                    className={styles.input}
+                    className={`${styles.input} ${fieldErrors[key] ? styles.inputInvalid : ''}`}
                     disabled={loading}
+                    aria-invalid={!!fieldErrors[key]}
+                    aria-describedby={fieldErrors[key] ? `${key}-error` : undefined}
                   />
                 </div>
+                {fieldErrors[key] && (
+                  <span id={`${key}-error`} className={styles.fieldError}>
+                    {fieldErrors[key]}
+                  </span>
+                )}
               </div>
             ))}
             <button type="submit" className={styles.button} disabled={loading}>

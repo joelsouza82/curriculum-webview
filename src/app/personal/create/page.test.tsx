@@ -72,8 +72,16 @@ describe('CreatePage', () => {
     render(<CreatePage />);
     await screen.findByLabelText('Nome completo');
 
+    const specialValues: Record<string, string> = {
+      birthdate: '2000-01-31',
+      email: 'email-value@example.com',
+      document: '11144477735',
+      rg: '123456789',
+      phone: '11987654321',
+    };
+
     for (const [field, label] of Object.entries(PERSONAL_FIELD_LABELS)) {
-      const value = field === 'birthdate' ? '2000-01-31' : `${field}-value`;
+      const value = specialValues[field] ?? `${field}-value`;
       await user.type(screen.getByLabelText(label), value);
     }
 
@@ -81,7 +89,11 @@ describe('CreatePage', () => {
 
     await waitFor(() =>
       expect(createPersonal).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'name-value', email: 'email-value', login_id: '11' })
+        expect.objectContaining({
+          name: 'name-value',
+          email: 'email-value@example.com',
+          login_id: '11',
+        })
       )
     );
     expect(await screen.findByText('Registro criado com sucesso!')).toBeInTheDocument();

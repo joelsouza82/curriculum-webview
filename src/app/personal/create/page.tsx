@@ -9,6 +9,31 @@ import { useRequireAuth } from '../../../hooks/useRequireAuth';
 import { useAppNavigation } from '../../../hooks/useAppNavigation';
 import Header from '../../../components/Header';
 import { PERSONAL_FIELD_LABELS } from '../../../shared/constants';
+import { maskPersonalField, validatePersonalField } from '../../../shared/validation';
+
+type InputProps = {
+  type: string;
+  maxLength?: number;
+  inputMode?: 'numeric' | 'tel' | 'email' | 'text';
+  placeholder?: string;
+};
+
+function getFieldInputProps(field: string): InputProps {
+  switch (field) {
+    case 'birthdate':
+      return { type: 'date' };
+    case 'document':
+      return { type: 'text', maxLength: 14, inputMode: 'numeric', placeholder: '000.000.000-00' };
+    case 'rg':
+      return { type: 'text', maxLength: 12, placeholder: '00.000.000-0' };
+    case 'phone':
+      return { type: 'text', maxLength: 15, inputMode: 'tel', placeholder: '(00) 00000-0000' };
+    case 'email':
+      return { type: 'email', placeholder: 'seuemail@exemplo.com' };
+    default:
+      return { type: 'text' };
+  }
+}
 
 function CreateForm() {
   const session = useRequireAuth();
@@ -37,6 +62,7 @@ function CreateForm() {
   const [success, setSuccess] = useState<string | null>(null);
   const [checkingExisting, setCheckingExisting] = useState(true);
   const [alreadyExists, setAlreadyExists] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!session || !loginId) {
@@ -72,7 +98,9 @@ function CreateForm() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const maskedValue = maskPersonalField(name, value);
+    setFormData((prev) => ({ ...prev, [name]: maskedValue }));
+    setFieldErrors((prev) => ({ ...prev, [name]: validatePersonalField(name, maskedValue) }));
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -80,6 +108,17 @@ function CreateForm() {
     if (!session) {
       return;
     }
+
+    const newFieldErrors: Record<string, string> = {};
+    (Object.keys(formData) as Array<keyof typeof formData>).forEach((field) => {
+      newFieldErrors[field] = validatePersonalField(field, formData[field] as string);
+    });
+    setFieldErrors(newFieldErrors);
+    if (Object.values(newFieldErrors).some(Boolean)) {
+      setError('Corrija os campos destacados antes de continuar.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setSuccess(null);
@@ -134,15 +173,22 @@ function CreateForm() {
                   {PERSONAL_FIELD_LABELS[field]}
                 </label>
                 <input
-                  type={field === 'birthdate' ? 'date' : 'text'}
+                  {...getFieldInputProps(field)}
                   id={field}
                   name={field}
                   value={formData[field]}
                   onChange={handleInputChange}
-                  className={styles.input}
+                  className={`${styles.input} ${fieldErrors[field] ? styles.inputInvalid : ''}`}
                   disabled={loading}
                   required
+                  aria-invalid={!!fieldErrors[field]}
+                  aria-describedby={fieldErrors[field] ? `${field}-error` : undefined}
                 />
+                {fieldErrors[field] && (
+                  <span id={`${field}-error`} className={styles.fieldError}>
+                    {fieldErrors[field]}
+                  </span>
+                )}
               </div>
             ))}
             <button type="submit" className={styles.button} disabled={loading}>
