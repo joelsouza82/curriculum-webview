@@ -72,7 +72,7 @@ export async function createLogin(
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || 'Falha ao criar cadastro');
+    throw new Error(errorData.error || errorData.message || 'Falha ao criar cadastro');
   }
 
   return response.json();
