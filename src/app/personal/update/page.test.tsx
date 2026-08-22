@@ -94,4 +94,21 @@ describe('UpdatePage', () => {
     );
     expect(await screen.findByText('Dados atualizados com sucesso!')).toBeInTheDocument();
   });
+
+  it('blocks submission and shows a field error when the CPF is invalid', async () => {
+    (getPersonals as jest.Mock).mockResolvedValue([basePersonal]);
+    const user = userEvent.setup();
+
+    render(<UpdatePage />);
+
+    const documentInput = await screen.findByLabelText('CPF');
+    await user.type(documentInput, '123');
+    await user.click(screen.getByRole('button', { name: /salvar alterações/i }));
+
+    expect(await screen.findByText('CPF inválido.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Corrija os campos destacados antes de continuar.')
+    ).toBeInTheDocument();
+    expect(updatePersonal).not.toHaveBeenCalled();
+  });
 });
