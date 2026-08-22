@@ -284,7 +284,9 @@ function UpdateForm() {
                   {PERSONAL_FIELD_LABELS[key as keyof typeof PERSONAL_FIELD_LABELS]}
                 </label>
                 <div className={styles.inputWrapper}>
-                  <Icon className={styles.inputIcon}>{PERSONAL_FIELD_ICONS[key]}</Icon>
+                  {key !== 'birthdate' && (
+                    <Icon className={styles.inputIcon}>{PERSONAL_FIELD_ICONS[key]}</Icon>
+                  )}
                   <input
                     {...getFieldInputProps(key)}
                     id={key}
@@ -295,7 +297,7 @@ function UpdateForm() {
                         : (personal as any)[key] || ''
                     }
                     onChange={handleInputChange}
-                    className={`${styles.input} ${fieldErrors[key] ? styles.inputInvalid : ''}`}
+                    className={`${styles.input} ${key === 'birthdate' ? styles.inputNoIcon : ''} ${fieldErrors[key] ? styles.inputInvalid : ''}`}
                     disabled={loading}
                     aria-invalid={!!fieldErrors[key]}
                     aria-describedby={fieldErrors[key] ? `${key}-error` : undefined}
