@@ -15,6 +15,8 @@ export function getFieldInputProps(field: string): InputProps {
       return { type: 'text', maxLength: 12, placeholder: '00.000.000-0' };
     case 'phone':
       return { type: 'text', maxLength: 15, inputMode: 'tel', placeholder: '(00) 00000-0000' };
+    case 'cep':
+      return { type: 'text', maxLength: 9, inputMode: 'numeric', placeholder: '00000-000' };
     case 'email':
       return { type: 'email', placeholder: 'seuemail@exemplo.com' };
     default:

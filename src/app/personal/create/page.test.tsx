@@ -78,6 +78,7 @@ describe('CreatePage', () => {
       document: '11144477735',
       rg: '123456789',
       phone: '11987654321',
+      cep: '01310100',
     };
 
     for (const [field, label] of Object.entries(PERSONAL_FIELD_LABELS)) {
@@ -112,6 +113,7 @@ describe('CreatePage', () => {
       document: '123',
       rg: '123456789',
       phone: '11987654321',
+      cep: '01310100',
     };
 
     for (const [field, label] of Object.entries(PERSONAL_FIELD_LABELS)) {
