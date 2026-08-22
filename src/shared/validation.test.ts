@@ -1,9 +1,11 @@
 import {
   isValidBirthdate,
+  isValidCEP,
   isValidCPF,
   isValidEmail,
   isValidPhone,
   isValidRG,
+  maskCEP,
   maskCPF,
   maskPersonalField,
   maskPhone,
@@ -29,8 +31,15 @@ describe('masks', () => {
     expect(maskPhone('11987654321')).toBe('(11) 98765-4321');
   });
 
+  it('formats a CEP as it is typed', () => {
+    expect(maskCEP('013')).toBe('013');
+    expect(maskCEP('01310100')).toBe('01310-100');
+    expect(maskCEP('01310-100extra')).toBe('01310-100');
+  });
+
   it('maskPersonalField only masks known fields', () => {
     expect(maskPersonalField('document', '11144477735')).toBe('111.444.777-35');
+    expect(maskPersonalField('cep', '01310100')).toBe('01310-100');
     expect(maskPersonalField('name', 'John Doe')).toBe('John Doe');
   });
 });
@@ -54,6 +63,12 @@ describe('validators', () => {
     expect(isValidPhone('123')).toBe(false);
   });
 
+  it('validates CEP by digit count', () => {
+    expect(isValidCEP('01310-100')).toBe(true);
+    expect(isValidCEP('01310100')).toBe(true);
+    expect(isValidCEP('123')).toBe(false);
+  });
+
   it('validates email format', () => {
     expect(isValidEmail('user@example.com')).toBe(true);
     expect(isValidEmail('invalid-email')).toBe(false);
@@ -74,6 +89,7 @@ describe('validatePersonalField', () => {
   it('returns an error message for invalid values', () => {
     expect(validatePersonalField('email', 'invalid')).toBe('E-mail inválido.');
     expect(validatePersonalField('document', '123')).toBe('CPF inválido.');
+    expect(validatePersonalField('cep', '123')).toBe('CEP inválido.');
   });
 
   it('returns empty string for fields without a validator', () => {

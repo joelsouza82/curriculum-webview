@@ -18,6 +18,12 @@ export function maskRG(value: string): string {
     .replace(/(\d{3})([\dX])$/, '$1-$2');
 }
 
+export function maskCEP(value: string): string {
+  return onlyDigits(value)
+    .slice(0, 8)
+    .replace(/(\d{5})(\d)/, '$1-$2');
+}
+
 export function maskPhone(value: string): string {
   const digits = onlyDigits(value).slice(0, 11);
   if (digits.length <= 10) {
@@ -69,6 +75,10 @@ export function isValidPhone(value: string): boolean {
   return digits.length === 10 || digits.length === 11;
 }
 
+export function isValidCEP(value: string): boolean {
+  return onlyDigits(value).length === 8;
+}
+
 export function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
@@ -96,6 +106,7 @@ const FIELD_ERROR_MESSAGES: Record<string, string> = {
   phone: 'Telefone inválido.',
   email: 'E-mail inválido.',
   birthdate: 'Data de nascimento inválida.',
+  cep: 'CEP inválido.',
 };
 
 const FIELD_VALIDATORS: Record<string, (value: string) => boolean> = {
@@ -104,6 +115,7 @@ const FIELD_VALIDATORS: Record<string, (value: string) => boolean> = {
   phone: isValidPhone,
   email: isValidEmail,
   birthdate: isValidBirthdate,
+  cep: isValidCEP,
 };
 
 export function validatePersonalField(field: string, value: string): string {
@@ -118,6 +130,7 @@ const FIELD_MASKS: Record<string, (value: string) => string> = {
   document: maskCPF,
   rg: maskRG,
   phone: maskPhone,
+  cep: maskCEP,
 };
 
 export function maskPersonalField(field: string, value: string): string {
