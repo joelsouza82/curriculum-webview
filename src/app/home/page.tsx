@@ -43,7 +43,7 @@ function HomeContent() {
                 <span className={styles.welcomeItemBadge}>Opção 1</span>
                 <h3 className={styles.welcomeItemTitle}>Preencha manualmente</h3>
                 <p className={styles.welcomeItemText}>
-                  Use o menu ao lado e comece por <strong>Dados Pessoais</strong> para inserir
+                  Use o menu e comece por <strong>Dados Pessoais</strong> para inserir
                   suas informações.
                 </p>
               </div>
