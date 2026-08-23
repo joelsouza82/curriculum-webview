@@ -13,6 +13,7 @@ export function useAppNavigation() {
     goToUpdate: (loginId: string) => router.push(`/personal/update?loginId=${loginId}`),
     goToCreate: (loginId: string) => router.push(`/personal/create?loginId=${loginId}`),
     goToDelete: (loginId: string) => router.push(`/personal/delete?loginId=${loginId}`),
+    goToImport: (loginId: string) => router.push(`/personal/import?loginId=${loginId}`),
     goBack: () => router.back(),
     logout: () => {
       clearSession();

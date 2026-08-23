@@ -42,7 +42,7 @@ export default function Header({ title, onBack, onLogout, email }: HeaderProps) 
       <h1 className={styles.title}>{title}</h1>
 
       <div className={`${styles.side} ${styles.sideRight}`}>
-        {email && <span className={styles.email}>{email}</span>}
+        {email && <span className={styles.email}>Olá, {email}</span>}
         <button
           type="button"
           className={styles.iconButton}
