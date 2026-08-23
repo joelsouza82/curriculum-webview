@@ -7,8 +7,10 @@ import { useRequireAuth } from '../../../hooks/useRequireAuth';
 import { useAppNavigation } from '../../../hooks/useAppNavigation';
 import { Personal } from '../../../types/personal';
 
+const mockUseSearchParams = jest.fn(() => new URLSearchParams('loginId=11'));
+
 jest.mock('next/navigation', () => ({
-  useSearchParams: () => new URLSearchParams('loginId=11'),
+  useSearchParams: () => mockUseSearchParams(),
 }));
 
 jest.mock('../../../services/personalService', () => ({
@@ -50,8 +52,80 @@ const basePersonal: Personal = {
 describe('UpdatePage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    mockUseSearchParams.mockReturnValue(new URLSearchParams('loginId=11'));
     (useRequireAuth as jest.Mock).mockReturnValue({ id: 11, email: 'user@example.com' });
     (useAppNavigation as jest.Mock).mockReturnValue({ goToSearch, goToPersonal, logout });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('renders nothing while there is no session', () => {
+    (useRequireAuth as jest.Mock).mockReturnValue(null);
+    mockUseSearchParams.mockReturnValue(new URLSearchParams(''));
+
+    const { container } = render(<UpdatePage />);
+
+    expect(container.textContent).toBe('');
+  });
+
+  it('shows an error when the URL has no loginId and there is no session id to fall back to', async () => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams(''));
+    (useRequireAuth as jest.Mock).mockReturnValue({ id: '', email: 'user@example.com' });
+
+    render(<UpdatePage />);
+
+    expect(await screen.findByText('Login não fornecido na URL.')).toBeInTheDocument();
+    expect(getPersonals).not.toHaveBeenCalled();
+  });
+
+  it('shows an error when fetching the record fails', async () => {
+    (getPersonals as jest.Mock).mockRejectedValue(new Error('network error'));
+
+    render(<UpdatePage />);
+
+    expect(
+      await screen.findByText('Não foi possível carregar os dados para atualização. Tente novamente.')
+    ).toBeInTheDocument();
+  });
+
+  it('navigates back when the header back button is clicked', async () => {
+    (getPersonals as jest.Mock).mockResolvedValue([basePersonal]);
+    const user = userEvent.setup();
+
+    render(<UpdatePage />);
+    await screen.findByLabelText('Nome completo');
+
+    await user.click(screen.getByRole('button', { name: 'Voltar' }));
+
+    expect(goToPersonal).toHaveBeenCalledWith('11');
+  });
+
+  it('shows an error when updating the record fails', async () => {
+    (getPersonals as jest.Mock).mockResolvedValue([basePersonal]);
+    (updatePersonal as jest.Mock).mockRejectedValue(new Error('server error'));
+    const user = userEvent.setup();
+
+    render(<UpdatePage />);
+
+    await screen.findByLabelText('Nome completo');
+    await user.click(screen.getByRole('button', { name: /salvar alterações/i }));
+
+    expect(
+      await screen.findByText('Não foi possível atualizar os dados. Tente novamente.')
+    ).toBeInTheDocument();
+  });
+
+  it('loads a birthdate value into the date input', async () => {
+    (getPersonals as jest.Mock).mockResolvedValue([
+      { ...basePersonal, birthdate: '1990-05-20T00:00:00Z' },
+    ]);
+
+    render(<UpdatePage />);
+
+    expect(await screen.findByLabelText('Data de nascimento')).toHaveValue('1990-05-20');
   });
 
   it('shows a not-found state when there is no record for the login', async () => {

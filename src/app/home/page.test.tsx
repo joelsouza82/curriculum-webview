@@ -5,8 +5,10 @@ import HomePage from './page';
 import { useRequireAuth } from '../../hooks/useRequireAuth';
 import { useAppNavigation } from '../../hooks/useAppNavigation';
 
+const mockUseSearchParams = jest.fn(() => new URLSearchParams('loginId=11'));
+
 jest.mock('next/navigation', () => ({
-  useSearchParams: () => new URLSearchParams('loginId=11'),
+  useSearchParams: () => mockUseSearchParams(),
 }));
 
 jest.mock('../../hooks/useRequireAuth', () => ({
@@ -23,6 +25,7 @@ jest.mock('../../hooks/useAppNavigation', () => ({
 describe('HomePage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockUseSearchParams.mockReturnValue(new URLSearchParams('loginId=11'));
     (useAppNavigation as jest.Mock).mockReturnValue({ goToPersonal, logout });
   });
 
@@ -43,6 +46,18 @@ describe('HomePage', () => {
     expect(await screen.findByText('Olá, user@example.com')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /dados pessoais/i }));
+
+    expect(goToPersonal).toHaveBeenCalledWith('11');
+  });
+
+  it('falls back to the session id when the URL has no loginId', async () => {
+    (useRequireAuth as jest.Mock).mockReturnValue({ id: 11, email: 'user@example.com' });
+    mockUseSearchParams.mockReturnValue(new URLSearchParams(''));
+    const user = userEvent.setup();
+
+    render(<HomePage />);
+
+    await user.click(await screen.findByRole('button', { name: /dados pessoais/i }));
 
     expect(goToPersonal).toHaveBeenCalledWith('11');
   });

@@ -5,42 +5,13 @@ import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 import { authLogin } from '../services/loginService';
 import { saveSession } from '../services/authService';
+import { Icon, emailPath, lockPath, arrowRightPath, checkPath } from '../shared/icons';
 
-function Icon({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
-      className={className}
-      aria-hidden="true"
-    >
-      {children}
-    </svg>
-  );
-}
-
-const emailPath = (
-  <path
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-  />
-);
-
-const lockPath = (
-  <path
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
-  />
-);
-
-const arrowRightPath = (
-  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-);
+const HERO_FEATURES = [
+  'Cadastre e centralize seus dados pessoais e profissionais em um só lugar.',
+  'Envie seu currículo para empresas e recrutadores de forma rápida e prática através de nosso aplicativo.',
+  'Atualize suas informações a qualquer momento, com segurança e praticidade.',
+];
 
 export default function LoginPage() {
   const router = useRouter();
@@ -68,74 +39,97 @@ export default function LoginPage() {
 
   return (
     <main className={styles.page}>
-      <div className={styles.card}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>Login</h1>
-          <p className={styles.subtitle}>Acesse o sistema de currículos</p>
+      <section className={styles.hero}>
+        <div className={styles.heroContent}>
+          <span className={styles.heroBadge}>Portal de Currículos</span>
+          <h1 className={styles.heroTitle}>
+            Seu currículo, sempre atualizado e em um só lugar.
+          </h1>
+          <p className={styles.heroText}>
+            Centralize seus dados pessoais e profissionais, mantenha tudo validado
+            e acesse quando precisar apresentar seu currículo de forma moderna.
+          </p>
+          <ul className={styles.heroList}>
+            {HERO_FEATURES.map((feature) => (
+              <li key={feature} className={styles.heroListItem}>
+                <Icon className={styles.heroListIcon}>{checkPath}</Icon>
+                <span>{feature}</span>
+              </li>
+            ))}
+          </ul>
         </div>
+      </section>
 
-        <form className={styles.form} onSubmit={handleLogin}>
-          {error && <p className={styles.error}>{error}</p>}
-          <div className={styles.fieldGroup}>
-            <label htmlFor="email" className={styles.label}>
-              E-mail
-            </label>
-            <div className={styles.inputWrapper}>
-              <Icon className={styles.inputIcon}>{emailPath}</Icon>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="seu@email.com"
-                className={styles.input}
-              />
-            </div>
+      <div className={styles.formSide}>
+        <div className={styles.card}>
+          <div className={styles.header}>
+            <h1 className={styles.title}>Login</h1>
+            <p className={styles.subtitle}>Acesse o sistema de currículos</p>
           </div>
 
-          <div className={styles.fieldGroup}>
-            <label htmlFor="password" className={styles.label}>
-              Senha
-            </label>
-            <div className={styles.inputWrapper}>
-              <Icon className={styles.inputIcon}>{lockPath}</Icon>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className={styles.input}
-              />
+          <form className={styles.form} onSubmit={handleLogin}>
+            {error && <p className={styles.error}>{error}</p>}
+            <div className={styles.fieldGroup}>
+              <label htmlFor="email" className={styles.label}>
+                E-mail
+              </label>
+              <div className={styles.inputWrapper}>
+                <Icon className={styles.inputIcon}>{emailPath}</Icon>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="seu@email.com"
+                  className={styles.input}
+                />
+              </div>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            className={styles.button}
-            disabled={!email || !password || loading}
-          >
-            {loading ? (
-              'Acessando...'
-            ) : (
-              <>
-                Acessar
-                <Icon className={styles.buttonIcon}>{arrowRightPath}</Icon>
-              </>
-            )}
-          </button>
-        </form>
+            <div className={styles.fieldGroup}>
+              <label htmlFor="password" className={styles.label}>
+                Senha
+              </label>
+              <div className={styles.inputWrapper}>
+                <Icon className={styles.inputIcon}>{lockPath}</Icon>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className={styles.input}
+                />
+              </div>
+            </div>
 
-        <p className={styles.footerText}>
-          Não tem conta?{' '}
-          <button
-            type="button"
-            className={styles.link}
-            onClick={() => router.push('/login')}
-          >
-            Crie aqui.
-          </button>
-        </p>
+            <button
+              type="submit"
+              className={styles.button}
+              disabled={!email || !password || loading}
+            >
+              {loading ? (
+                'Acessando...'
+              ) : (
+                <>
+                  Acessar
+                  <Icon className={styles.buttonIcon}>{arrowRightPath}</Icon>
+                </>
+              )}
+            </button>
+          </form>
+
+          <p className={styles.footerText}>
+            Não tem conta?{' '}
+            <button
+              type="button"
+              className={styles.link}
+              onClick={() => router.push('/login')}
+            >
+              Crie aqui.
+            </button>
+          </p>
+        </div>
       </div>
     </main>
   );

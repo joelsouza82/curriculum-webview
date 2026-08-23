@@ -52,6 +52,15 @@ describe('validators', () => {
     expect(isValidCPF('123')).toBe(false);
   });
 
+  it('rejects a CPF whose first check digit does not match', () => {
+    expect(isValidCPF('111.444.777-45')).toBe(false);
+  });
+
+  it('accepts CPFs whose check digits wrap from 10 to 0', () => {
+    expect(isValidCPF('000.000.006-04')).toBe(true);
+    expect(isValidCPF('000.000.018-30')).toBe(true);
+  });
+
   it('validates RG by digit count', () => {
     expect(isValidRG('12.345.678-9')).toBe(true);
     expect(isValidRG('123')).toBe(false);
@@ -79,11 +88,19 @@ describe('validators', () => {
     expect(isValidBirthdate('2999-01-01')).toBe(false);
     expect(isValidBirthdate('not-a-date')).toBe(false);
   });
+
+  it('rejects a birthdate with an out-of-range month/day', () => {
+    expect(isValidBirthdate('2023-13-45')).toBe(false);
+  });
 });
 
 describe('validatePersonalField', () => {
   it('returns no error for empty values', () => {
     expect(validatePersonalField('email', '')).toBe('');
+  });
+
+  it('returns no error for valid values', () => {
+    expect(validatePersonalField('email', 'user@example.com')).toBe('');
   });
 
   it('returns an error message for invalid values', () => {
