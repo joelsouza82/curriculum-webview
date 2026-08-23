@@ -68,4 +68,26 @@ describe('LoginPage', () => {
     expect(saveSession).not.toHaveBeenCalled();
     expect(push).not.toHaveBeenCalled();
   });
+
+  it('navigates to the signup page when "Crie aqui" is clicked', async () => {
+    const user = userEvent.setup();
+    render(<LoginPage />);
+
+    await user.click(screen.getByRole('button', { name: /crie aqui/i }));
+
+    expect(push).toHaveBeenCalledWith('/login');
+  });
+
+  it('shows the default error message when the rejection is not an Error', async () => {
+    const user = userEvent.setup();
+    (authLogin as jest.Mock).mockRejectedValue('boom');
+
+    render(<LoginPage />);
+
+    await user.type(screen.getByLabelText('E-mail'), 'user@example.com');
+    await user.type(screen.getByLabelText('Senha'), 'wrong');
+    await user.click(screen.getByRole('button', { name: /acessar/i }));
+
+    expect(await screen.findByText('E-mail ou senha inválidos.')).toBeInTheDocument();
+  });
 });

@@ -67,6 +67,22 @@ describe('loginService', () => {
 
       await expect(getLogins()).rejects.toThrow('server error');
     });
+
+    it('falls back to a default message when the API sends no error body', async () => {
+      mockFetchOnce({ ok: false, status: 500, jsonBody: {} });
+
+      await expect(getLogins()).rejects.toThrow('Falha ao buscar cadastros');
+    });
+
+    it('falls back to a default message when the error body cannot be parsed', async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        json: jest.fn().mockRejectedValue(new Error('invalid json')),
+      });
+
+      await expect(getLogins()).rejects.toThrow('Falha ao buscar cadastros');
+    });
   });
 
   describe('authLogin', () => {
@@ -120,6 +136,22 @@ describe('loginService', () => {
       mockFetchOnce({ ok: false, status: 400, jsonBody: { message: 'invalid' } });
 
       await expect(createLogin({ email: 'x@x.com', password: '1' })).rejects.toThrow('invalid');
+    });
+
+    it('prefers the "error" field over "message" when both are present', async () => {
+      mockFetchOnce({ ok: false, status: 400, jsonBody: { error: 'e-mail já cadastrado' } });
+
+      await expect(createLogin({ email: 'x@x.com', password: '1' })).rejects.toThrow(
+        'e-mail já cadastrado'
+      );
+    });
+
+    it('falls back to a default message when the API sends no error body', async () => {
+      mockFetchOnce({ ok: false, status: 400, jsonBody: {} });
+
+      await expect(createLogin({ email: 'x@x.com', password: '1' })).rejects.toThrow(
+        'Falha ao criar cadastro'
+      );
     });
   });
 });

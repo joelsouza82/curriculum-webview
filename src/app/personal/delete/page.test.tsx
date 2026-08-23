@@ -7,8 +7,10 @@ import { useRequireAuth } from '../../../hooks/useRequireAuth';
 import { useAppNavigation } from '../../../hooks/useAppNavigation';
 import { Personal } from '../../../types/personal';
 
+const mockUseSearchParams = jest.fn(() => new URLSearchParams('loginId=11'));
+
 jest.mock('next/navigation', () => ({
-  useSearchParams: () => new URLSearchParams('loginId=11'),
+  useSearchParams: () => mockUseSearchParams(),
 }));
 
 jest.mock('../../../services/personalService', () => ({
@@ -50,8 +52,69 @@ const basePersonal: Personal = {
 describe('DeletePage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    mockUseSearchParams.mockReturnValue(new URLSearchParams('loginId=11'));
     (useRequireAuth as jest.Mock).mockReturnValue({ id: 11, email: 'user@example.com' });
     (useAppNavigation as jest.Mock).mockReturnValue({ goToSearch, goToPersonal, logout });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('renders nothing while there is no session', () => {
+    (useRequireAuth as jest.Mock).mockReturnValue(null);
+    mockUseSearchParams.mockReturnValue(new URLSearchParams(''));
+
+    const { container } = render(<DeletePage />);
+
+    expect(container.textContent).toBe('');
+  });
+
+  it('shows an error when the URL has no loginId and there is no session id to fall back to', async () => {
+    mockUseSearchParams.mockReturnValue(new URLSearchParams(''));
+    (useRequireAuth as jest.Mock).mockReturnValue({ id: '', email: 'user@example.com' });
+
+    render(<DeletePage />);
+
+    expect(await screen.findByText('Login não fornecido na URL.')).toBeInTheDocument();
+    expect(getPersonals).not.toHaveBeenCalled();
+  });
+
+  it('shows an error when fetching the record fails', async () => {
+    (getPersonals as jest.Mock).mockRejectedValue(new Error('network error'));
+
+    render(<DeletePage />);
+
+    expect(
+      await screen.findByText('Não foi possível carregar os dados para exclusão. Tente novamente.')
+    ).toBeInTheDocument();
+  });
+
+  it('navigates back when the header back button is clicked', async () => {
+    (getPersonals as jest.Mock).mockResolvedValue([basePersonal]);
+    const user = userEvent.setup();
+
+    render(<DeletePage />);
+    await screen.findByText('Ana');
+
+    await user.click(screen.getByRole('button', { name: 'Voltar' }));
+
+    expect(goToPersonal).toHaveBeenCalledWith('11');
+  });
+
+  it('shows an error when deleting the record fails', async () => {
+    (getPersonals as jest.Mock).mockResolvedValue([basePersonal]);
+    (deletePersonal as jest.Mock).mockRejectedValue(new Error('server error'));
+    const user = userEvent.setup();
+
+    render(<DeletePage />);
+
+    await user.click(await screen.findByRole('button', { name: /^excluir$/i }));
+
+    expect(
+      await screen.findByText('Não foi possível excluir os dados. Tente novamente.')
+    ).toBeInTheDocument();
   });
 
   it('shows a not-found state when there is no record for the login', async () => {
@@ -85,6 +148,16 @@ describe('DeletePage', () => {
 
     await waitFor(() => expect(deletePersonal).toHaveBeenCalledWith('5'));
     expect(await screen.findByText('Registro excluído com sucesso!')).toBeInTheDocument();
+  });
+
+  it('shows a placeholder for missing name, document and email', async () => {
+    (getPersonals as jest.Mock).mockResolvedValue([
+      { ...basePersonal, name: '', document: '', email: '' },
+    ]);
+
+    render(<DeletePage />);
+
+    expect(await screen.findAllByText('—')).toHaveLength(3);
   });
 
   it('navigates to search when cancel is clicked', async () => {

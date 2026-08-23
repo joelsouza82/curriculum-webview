@@ -55,4 +55,23 @@ describe('CadastroPage', () => {
 
     expect(await screen.findByText('Falha ao criar cadastro')).toBeInTheDocument();
   });
+
+  it('navigates back to login when the footer link is clicked', async () => {
+    const user = userEvent.setup();
+    render(<CadastroPage />);
+
+    await user.click(screen.getByRole('button', { name: /já tenho conta/i }));
+
+    expect(push).toHaveBeenCalledWith('/');
+  });
+
+  it('shows the default error message when the rejection is not an Error', async () => {
+    (createLogin as jest.Mock).mockRejectedValue('boom');
+
+    await fillAndSubmit('new@example.com');
+
+    expect(
+      await screen.findByText('Não foi possível concluir o cadastro.')
+    ).toBeInTheDocument();
+  });
 });
