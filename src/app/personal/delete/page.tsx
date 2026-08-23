@@ -8,45 +8,7 @@ import { Personal } from '../../../types/personal';
 import { useRequireAuth } from '../../../hooks/useRequireAuth';
 import { useAppNavigation } from '../../../hooks/useAppNavigation';
 import Header from '../../../components/Header';
-
-function Icon({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
-      className={className}
-      aria-hidden="true"
-    >
-      {children}
-    </svg>
-  );
-}
-
-const inboxPath = (
-  <path
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    d="M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859M2.25 13.5V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18v-4.5M2.25 13.5l1.591-6.363A2.25 2.25 0 015.99 5.25h12.02a2.25 2.25 0 012.149 1.887l1.591 6.363"
-  />
-);
-
-const trashPath = (
-  <>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104a2.25 2.25 0 0 1 4.5 0V4.5h-4.5V3.104Z" />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M4.5 4.5h15M6 4.5v13.5A2.25 2.25 0 0 0 8.25 20.25h7.5A2.25 2.25 0 0 0 18 18V4.5M9.75 9.75v6m4.5-6v6"
-    />
-  </>
-);
-
-const xMarkPath = (
-  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-);
+import { Icon, inboxPath, trashPath, xMarkPath } from '../../../shared/icons';
 
 function DeleteForm() {
   const searchParams = useSearchParams();

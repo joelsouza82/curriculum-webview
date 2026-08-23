@@ -1,5 +1,99 @@
 .page {
   min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  background: #f1f5f9;
+}
+
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 64px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 55%, #2563eb 100%);
+  color: #ffffff;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/curriculum-pattern.svg');
+  background-repeat: repeat;
+  background-size: 220px 220px;
+  opacity: 0.14;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 15% 85%, rgba(37, 99, 235, 0.55), transparent 55%);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  max-width: 460px;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.heroTitle {
+  margin: 0 0 16px;
+  font-size: 2.5rem;
+  line-height: 1.15;
+  font-weight: 800;
+}
+
+.heroText {
+  margin: 0 0 28px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.heroList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.heroListItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.heroListIcon {
+  flex-shrink: 0;
+  width: 1.3rem;
+  height: 1.3rem;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.formSide {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,6 +108,20 @@
   border-radius: 28px;
   padding: 32px;
   box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+}
+
+@media (max-width: 900px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: 40px 24px;
+  }
+
+  .heroTitle {
+    font-size: 2rem;
+  }
 }
 
 .header {
