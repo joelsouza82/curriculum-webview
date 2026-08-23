@@ -7,6 +7,7 @@ import { useRequireAuth } from '../../hooks/useRequireAuth';
 import { useAppNavigation } from '../../hooks/useAppNavigation';
 import Header from '../../components/Header';
 import ResumeUpload from '../../components/ResumeUpload';
+import { Icon, identificationPath, documentArrowUpPath } from '../../shared/icons';
 
 const icons = {
   personal: '🧑',
@@ -30,6 +31,37 @@ function HomeContent() {
     <>
       <Header title="Gerenciador de Currículos" onLogout={logout} email={session.email} />
       <main className={styles.main}>
+        <div className={styles.welcome}>
+          <h2 className={styles.welcomeTitle}>Bem-vindo(a) ao Gerenciador de Currículos!</h2>
+          <p className={styles.welcomeText}>
+            Escolha como preencher os seus dados:
+          </p>
+          <div className={styles.welcomeCard}>
+            <div className={styles.welcomeItem}>
+              <Icon className={styles.welcomeItemIcon}>{identificationPath}</Icon>
+              <div>
+                <span className={styles.welcomeItemBadge}>Opção 1</span>
+                <h3 className={styles.welcomeItemTitle}>Preencha manualmente</h3>
+                <p className={styles.welcomeItemText}>
+                  Use o menu ao lado e comece por <strong>Dados Pessoais</strong> para inserir
+                  suas informações.
+                </p>
+              </div>
+            </div>
+
+            <div className={styles.welcomeItem}>
+              <Icon className={styles.welcomeItemIcon}>{documentArrowUpPath}</Icon>
+              <div>
+                <span className={styles.welcomeItemBadge}>Opção 2</span>
+                <h3 className={styles.welcomeItemTitle}>Importe seu currículo</h3>
+                <p className={styles.welcomeItemText}>
+                  Envie um arquivo em <strong>PDF ou Word</strong> ao lado e deixe os dados
+                  pré-preenchidos para você só revisar e salvar.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className={styles.layout}>
           <nav className={styles.sidebar}>
             <button

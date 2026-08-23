@@ -4,6 +4,82 @@
   padding-top: 3rem;
 }
 
+.welcome {
+  margin: 0 0 2rem;
+  width: min(100%, 56rem);
+  text-align: center;
+}
+
+.welcomeTitle {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.welcomeText {
+  margin: 0 0 1.25rem;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.welcomeCard {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  text-align: left;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+  box-sizing: border-box;
+}
+
+.welcomeItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.75rem 0;
+}
+
+.welcomeItem + .welcomeItem {
+  border-top: 1px solid #e2e8f0;
+}
+
+.welcomeItemBadge {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  background-color: #e0e7ff;
+  color: #4338ca;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.welcomeItemIcon {
+  width: 2rem;
+  height: 2rem;
+  color: #6366f1;
+  flex-shrink: 0;
+}
+
+.welcomeItemTitle {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.welcomeItemText {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
 .layout {
   display: flex;
   align-items: flex-start;
@@ -59,7 +135,7 @@
   composes: diplomasButton from global;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .main {
     padding: 1.5rem 1rem;
   }
