@@ -16,6 +16,16 @@
 
 .sideRight {
   justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.email {
+  font-size: 0.875rem;
+  color: #4b5563;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 12rem;
 }
 
 .title {
@@ -58,5 +68,9 @@
 
   .title {
     font-size: 1.1rem;
+  }
+
+  .email {
+    display: none;
   }
 }

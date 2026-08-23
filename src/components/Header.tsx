@@ -7,9 +7,10 @@ interface HeaderProps {
   title: string;
   onBack?: () => void;
   onLogout: () => void;
+  email?: string;
 }
 
-export default function Header({ title, onBack, onLogout }: HeaderProps) {
+export default function Header({ title, onBack, onLogout, email }: HeaderProps) {
   return (
     <header className={styles.header}>
       <div className={styles.side}>
@@ -41,6 +42,7 @@ export default function Header({ title, onBack, onLogout }: HeaderProps) {
       <h1 className={styles.title}>{title}</h1>
 
       <div className={`${styles.side} ${styles.sideRight}`}>
+        {email && <span className={styles.email}>{email}</span>}
         <button
           type="button"
           className={styles.iconButton}

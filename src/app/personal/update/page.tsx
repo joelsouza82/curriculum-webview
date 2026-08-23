@@ -120,6 +120,7 @@ function UpdateForm() {
         title="Atualizar Dados Pessoais"
         onBack={() => goToPersonal(loginId)}
         onLogout={logout}
+        email={session.email}
       />
       <main className={styles.main}>
         {loading && <p>Carregando dados pessoais...</p>}

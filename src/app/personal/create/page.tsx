@@ -125,6 +125,7 @@ function CreateForm() {
         title="Cadastrar Dados Pessoais"
         onBack={goBack}
         onLogout={logout}
+        email={session.email}
       />
       <main className={styles.main}>
         {error && <p className={styles.error}>{error}</p>}
