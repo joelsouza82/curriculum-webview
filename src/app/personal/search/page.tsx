@@ -108,6 +108,7 @@ function SearchContent() {
         title="Dados Pessoais Encontrado"
         onBack={() => goToPersonal(loginId)}
         onLogout={logout}
+        email={session.email}
       />
       <main className={styles.main}>
         {loading && (

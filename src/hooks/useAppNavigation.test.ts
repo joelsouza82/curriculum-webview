@@ -55,6 +55,12 @@ describe('useAppNavigation', () => {
     expect(push).toHaveBeenCalledWith('/personal/delete?loginId=7');
   });
 
+  it('goToImport pushes /personal/import with loginId', () => {
+    const { result } = renderHook(() => useAppNavigation());
+    result.current.goToImport('7');
+    expect(push).toHaveBeenCalledWith('/personal/import?loginId=7');
+  });
+
   it('goBack calls router.back', () => {
     const { result } = renderHook(() => useAppNavigation());
     result.current.goBack();

@@ -52,12 +52,8 @@ function PersonalContent() {
 
   return (
     <>
-      <Header title="Dados Pessoais" onBack={() => goToHome(loginId)} onLogout={logout} />
+      <Header title="Dados Pessoais" onBack={() => goToHome(loginId)} onLogout={logout} email={session.email} />
       <main className={styles.main}>
-        <div className={styles.titleContainer}>
-          <p className={styles.welcome}>Olá, {session.email}</p>
-        </div>
-
         <div className={styles.grid}>
           <button
             className={`${styles.button} ${styles.addButton}`}
